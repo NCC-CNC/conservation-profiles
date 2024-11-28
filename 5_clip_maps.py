@@ -9,7 +9,7 @@ arcpy.env.overwriteOutput = True
 ### SETUP ################################
 
 # Set prj
-ncc_prj = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/Forest_LC_30m_2022.tif"
+ncc_prj = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/Forest_LC_30m_2022.tif" # This needs to point to any file with the NCC Albers prj
 arcpy.env.outputCoordinateSystem = arcpy.Describe(ncc_prj).spatialReference
 
 # Create output gdb for vectors
@@ -48,7 +48,7 @@ shoreline_path = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_
 rivers_path = "C:/Users/marc.edwards/Documents/gisdata/hydrology/NHN/master_rivers.gdb/master_rivers"
 
 # tifs
-# S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/Canada_wtw_2024_noIncludes.tif
+# S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/Canada_wtw_2024.tif
 where_to_work_prioritization = "C:/Users/marc.edwards/Documents/PROJECTS/Canada_wide_ecoregion_assessments/processing/prioritizr/ecozones/Canada_wtw_2024.tif"
 # S drive location: S:/CONS_TECH/PRZ/DATA/NAT_1KM/biod/rich/biod_rich.tif
 species_biodiversity_count = "C:/Data/PRZ/WTW_DATA/WTW_NAT_DATA_20240522/biodiversity/richness/BOID_COUNT.tif"
