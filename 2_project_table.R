@@ -1,3 +1,5 @@
+# Re create the ERAP table for an individual project
+
 rm(list = ls(all.names = TRUE))
 gc()
 

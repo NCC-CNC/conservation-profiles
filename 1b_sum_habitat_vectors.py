@@ -1,12 +1,10 @@
-# Script to calcualte the area or length of habitat in AOI
+# Script to calcualte the area or length of habitat in project
 
 # Workflow:
-  # For AOI
-    # Intersect feature with ecoregions
+  # For project
+    # Intersect feature with project
     # Dissolve
     # Calculate area
-  # For PAs in each ecoregion
-    # Clip grassland feature to PAs, then repeat the above steps
 
 import arcpy
 

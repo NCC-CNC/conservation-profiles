@@ -1,4 +1,4 @@
-# Sum forest area by AOI and PAs and project
+# Sum forest area in project
 
 library(sf)
 library(terra)

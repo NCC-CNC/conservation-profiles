@@ -1,3 +1,5 @@
+# PLACE ON HOLD - DON'T RUN PRONET CALCS UNTIL WE'VE DECIDED IF PRONET IS USEFUL AND INCORPORATED THE ECOLOGICAL DISTANCE RASTERS
+
 # ProNet proof of concept for any AOI and proposed project
 
 # Here we general the ProNet score for the existing PAs in the AOI (usually an ecoregion)

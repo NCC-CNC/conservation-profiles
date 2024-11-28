@@ -3,7 +3,7 @@
 # Code copied from ERAPs
 # Note that these tables are using the term "shortfall" whereas the ERAPs now use "protection gap"
 
-# Additional columns are added to demo the projects contribution to species goals
+# Additional columns are added to demonstrate the projects contribution to species goals
 
 # NOTE: this scripts requires national tifs have been created for all species data
 # This is done in the ERAPs using script 5a_species_data_prep.R
