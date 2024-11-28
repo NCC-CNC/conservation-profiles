@@ -13,7 +13,6 @@ if(!dir.exists("habitat")){
 }
 
 # Load project
-# S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/Dans_updated_WTW_Includes_July_2024/Existing_Conservation.tif
 project_sf <- st_read("test_project.shp") %>%
   summarise(geometry = st_union(.)) %>%
   st_cast("POLYGON")
