@@ -20,15 +20,14 @@ erap <- st_read("C:/Users/marc.edwards/Documents/PROJECTS/Canada_wide_ecoregion_
 erap <- erap[erap$ECOREGION == eco,]
 
 # Load project
-# S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/Dans_updated_WTW_Includes_July_2024/Existing_Conservation.tif
 project_sf <- st_read("test_project.shp") %>%
   summarise(geometry = st_union(.)) %>%
   st_cast("POLYGON")
 
 # Open WTW solution
 # Open solution
-# S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/Canada_wtw_2024_noIncludes.tif
-s1 <- rast("C:/Users/marc.edwards/Documents/PROJECTS/Canada_wide_ecoregion_assessments/processing/prioritizr/ecozones/Canada_wtw_2024_noIncludes.tif")
+# S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/Canada_wtw_2024.tif
+s1 <- rast("C:/Users/marc.edwards/Documents/PROJECTS/Canada_wide_ecoregion_assessments/processing/prioritizr/ecozones/Canada_wtw_2024.tif")
 
 
 tib <- tibble(
