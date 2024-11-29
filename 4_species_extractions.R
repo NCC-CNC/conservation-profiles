@@ -1,4 +1,4 @@
-# Extract species areas to AOI and project
+# Extract species areas to Ecoregion and project
 
 # Code copied from ERAPs
 # Note that these tables are using the term "shortfall" whereas the ERAPs now use "protection gap"
@@ -21,7 +21,6 @@ library(openxlsx)
 terra::gdalCache(size = 16000)
 
 # Load project
-# S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/Dans_updated_WTW_Includes_July_2024/Existing_Conservation.tif
 project_sf <- st_read("test_project.shp") %>%
   summarise(geometry = st_union(.)) %>%
   st_cast("POLYGON")
@@ -30,9 +29,9 @@ project_sf <- st_read("test_project.shp") %>%
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/protected_areas_2024.gdb/cpcad_ncc_dslv_july2024
 cpcad_ncc <- st_read("C:/Users/marc.edwards/Documents/gisdata/protected_areas_2024/ProtectedConservedArea.gdb", "cpcad_ncc_dslv_july2024")
 
-# Load AOI - using terrestrial version of ecoregions for this example
+# Load ecoregions - using terrestrial version of ecoregions for this example
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/ecoregions_dslv_clipped_to_2016_census_boundary.shp
-aoi_sf <- st_read("C:/Users/marc.edwards/Documents/gisdata/national_ecological_framework/Ecoregions/ecoregions_dslv_clipped_to_2016_census_boundary.shp") %>%
+ecoregion_sf <- st_read("C:/Users/marc.edwards/Documents/gisdata/national_ecological_framework/Ecoregions/ecoregions_dslv_clipped_to_2016_census_boundary.shp") %>%
   filter(ECOREGION %in% c(96)) %>%
   mutate(geometry = st_union(.))
 
@@ -63,72 +62,73 @@ names(sp_all) <- basename(sources(sp_all))
 
 # Note that these extractions are slow and require a lot of memory
 # We don't need to run the extract on all species, only the species intersecting
-# the AOI. We could do some pre-calculations (e.g. listing ecoregions that each 
-# species intersects) that would allow us to filter down the number of extracts
+# the ecoregion. We could do some pre-calculations (e.g. listing ecoregions that each 
+# species intersects) that would allow us to filter down the number of extracts.
+# For now I'm just running the extract on all species.
 
-# extract values for AOI
-df_aoi <- exactextractr::exact_extract(sp_all, st_union(aoi_sf), 'sum') %>%
+# extract values for ecoregion
+df_ecoregion <- exactextractr::exact_extract(sp_all, st_union(ecoregion_sf), 'sum') %>%
   pivot_longer(
     cols = colnames(.),
     names_to = "species",
-    values_to = "AOI_Km2"
+    values_to = "Ecoregion_Total_Km2"
   )
 
 # extract values for PA
-aoi_pa_sf <- st_intersection(cpcad_ncc, aoi_sf)
-df_pa <- exactextractr::exact_extract(sp_all, st_union(aoi_pa_sf), 'sum') %>%
+ecoregion_pa_sf <- st_intersection(cpcad_ncc, ecoregion_sf)
+df_pa <- exactextractr::exact_extract(sp_all, st_union(ecoregion_pa_sf), 'sum') %>%
   pivot_longer(
     cols = colnames(.),
     names_to = "species",
-    values_to = "AOI_Protected_Km2"
+    values_to = "Ecoregion_Protected_Km2"
   )
 
 # extract values for project
-aoi_project_sf <- st_intersection(project_sf, aoi_sf)
-df_project <- exactextractr::exact_extract(sp_all, st_union(aoi_project_sf), 'sum') %>%
+project_sf <- st_intersection(project_sf, ecoregion_sf)
+df_project <- exactextractr::exact_extract(sp_all, st_union(project_sf), 'sum') %>%
   pivot_longer(
     cols = colnames(.),
     names_to = "species",
-    values_to = "Project_Km2"
+    values_to = "Project_Total_Km2"
   )
 
 # join sums
-df <- left_join(df_aoi, df_pa, by = join_by(species == species)) %>%
+df <- left_join(df_ecoregion, df_pa, by = join_by(species == species)) %>%
   left_join(df_project, by = join_by(species == species)) %>%
-  filter(AOI_Km2 > 0)
+  filter(Ecoregion_Total_Km2 > 0)
 
 # remove .sum from names
 df$species <- gsub('^sum.', '', df$species)
 
 # convert ECCC data from ha to km2
-df$AOI_Km2[grepl('^T_NAT_ECCC', df$species)] <- df$AOI_Km2[grepl('^T_NAT_ECCC', df$species)] / 100
-df$AOI_Protected_Km2[grepl('^T_NAT_ECCC', df$species)] <- df$AOI_Protected_Km2[grepl('^T_NAT_ECCC', df$species)] / 100
-df$Project_Km2[grepl('^T_NAT_ECCC', df$species)] <- df$Project_Km2[grepl('^T_NAT_ECCC', df$species)] / 100
+df$Ecoregion_Total_Km2[grepl('^T_NAT_ECCC', df$species)] <- df$Ecoregion_Total_Km2[grepl('^T_NAT_ECCC', df$species)] / 100
+df$Ecoregion_Protected_Km2[grepl('^T_NAT_ECCC', df$species)] <- df$Ecoregion_Protected_Km2[grepl('^T_NAT_ECCC', df$species)] / 100
+df$Project_Total_Km2[grepl('^T_NAT_ECCC', df$species)] <- df$Project_Total_Km2[grepl('^T_NAT_ECCC', df$species)] / 100
 
 # join national info from meta data table
 out_df <- inner_join(species_meta, df, by = join_by(File == species)) %>%
   mutate(
     National_Km2_Goal = National_Total_Km2 * (National_Pct_Goal/100),
     National_Shortfall_Km2 = National_Km2_Goal - National_Protected_Km2,
-    AOI_Goal_Km2 = (National_Pct_Goal/100) * AOI_Km2,
-    AOI_Shortfall_Km2 = AOI_Goal_Km2 - AOI_Protected_Km2
+    Ecoregion_Km2_Goal = (National_Pct_Goal/100) * Ecoregion_Total_Km2,
+    Ecoregion_Shortfall_Km2 = Ecoregion_Km2_Goal - Ecoregion_Protected_Km2
   )
 out_df$National_Shortfall_Km2[out_df$National_Shortfall_Km2 < 0] <- 0
-out_df$AOI_Shortfall_Km2[out_df$AOI_Shortfall_Km2 < 0] <- 0
+out_df$Ecoregion_Shortfall_Km2[out_df$Ecoregion_Shortfall_Km2 < 0] <- 0
 
-# Does the project meet any national or AOI shortfall values
+# Does the project meet any national or Ecoregion shortfall goals?
 out_df <- out_df %>%
   mutate(
     National_Shortfall_Met = 
       case_when(
-        National_Shortfall_Km2 > 0 & National_Shortfall_Km2 - Project_Km2 <= 0 ~ "Met",
-        National_Shortfall_Km2 > 0 & National_Shortfall_Km2 - Project_Km2 > 0 ~ "Not met",
+        National_Shortfall_Km2 > 0 & National_Shortfall_Km2 - Project_Total_Km2 <= 0 ~ "Met",
+        National_Shortfall_Km2 > 0 & National_Shortfall_Km2 - Project_Total_Km2 > 0 ~ "Not met",
         .default = "NA"
       ),
-    AOI_Shortfall_Met = 
+    Ecoregion_Shortfall_Met = 
       case_when(
-        AOI_Shortfall_Km2 > 0 & AOI_Shortfall_Km2 - Project_Km2 <= 0 ~ "Met",
-        AOI_Shortfall_Km2 > 0 & AOI_Shortfall_Km2 - Project_Km2 > 0 ~ "Not met",
+        Ecoregion_Shortfall_Km2 > 0 & Ecoregion_Shortfall_Km2 - Project_Total_Km2 <= 0 ~ "Met",
+        Ecoregion_Shortfall_Km2 > 0 & Ecoregion_Shortfall_Km2 - Project_Total_Km2 > 0 ~ "Not met",
         .default = "NA"
       )
   )
@@ -145,13 +145,13 @@ out_df <- out_df[, c("Source",
                      "National_Km2_Goal", 
                      "National_Protected_Km2", 
                      "National_Shortfall_Km2", 
-                     "AOI_Km2", 
-                     "AOI_Goal_Km2", 
-                     "AOI_Protected_Km2",
-                     "AOI_Shortfall_Km2", 
-                     "Project_Km2",
+                     "Ecoregion_Total_Km2", 
+                     "Ecoregion_Km2_Goal", 
+                     "Ecoregion_Protected_Km2",
+                     "Ecoregion_Shortfall_Km2", 
+                     "Project_Total_Km2",
                      "National_Shortfall_Met",
-                     "AOI_Shortfall_Met")]
+                     "Ecoregion_Shortfall_Met")]
 
 # round
 out_df[c(7:16)] <- round(out_df[c(7:16)], 2)
@@ -160,22 +160,22 @@ out_df[c(7:16)] <- round(out_df[c(7:16)], 2)
 # Create a summary table reporting the following for each source and for all species together:
 # Count of species
 # Count with National shortfall > 0 
-# Count with AOI shortfall > 0
+# Count with Ecoregion shortfall > 0
 # Count where project contributes to national shortfall
-# Count where project contributes to AOI shortfall
+# Count where project contributes to Ecoregion shortfall
 # Count where project meets national shortfall
-# Count where project meets AOI shortfall
+# Count where project meets Ecoregion shortfall
 summary_tib <- out_df %>%
   group_by(Source) %>%
   summarise(
-    "Count of species in AOI" = n(),
+    "Count of species in Ecoregion" = n(),
     "Count of species with national shortfall" = sum(National_Shortfall_Km2 > 0),
-    "Count of species with AOI shortfall" = sum(AOI_Shortfall_Km2 > 0),
-    "Count of species in Project" = sum(Project_Km2 > 0),
-    "Project contributes to meeting national shortfall" = sum(National_Shortfall_Km2 > 0 & Project_Km2 > 0),
-    "Project contributes to meeting AOI shortfall" = sum(AOI_Shortfall_Km2 > 0 & Project_Km2 > 0),
+    "Count of species with ecoregion shortfall" = sum(Ecoregion_Shortfall_Km2 > 0),
+    "Count of species in Project" = sum(Project_Total_Km2 > 0),
+    "Project contributes to meeting national shortfall" = sum(National_Shortfall_Km2 > 0 & Project_Total_Km2 > 0),
+    "Project contributes to meeting Ecoregion shortfall" = sum(Ecoregion_Shortfall_Km2 > 0 & Project_Total_Km2 > 0),
     "Project meets national shortfall" = sum(National_Shortfall_Met == "Met"),
-    "Project meets AOI shortfall" = sum(AOI_Shortfall_Met == "Met")
+    "Project meets ecoregion shortfall" = sum(Ecoregion_Shortfall_Met == "Met")
   ) %>%
   pivot_longer(cols = colnames(.[2:9])) %>%
   pivot_wider(names_from = Source, values_from = value) %>%
@@ -191,4 +191,4 @@ sheet_list[["Summary"]] <- summary_tib
 for(s in source_list){
   sheet_list[[s]] <- out_df[out_df$Source == s,]
 }
-write.xlsx(sheet_list, file.path("output/Tables/", paste0("aoi_project_species_assessment.xlsx")))
+write.xlsx(sheet_list, file.path("output/Tables/", paste0("project_species_assessment.xlsx")))
