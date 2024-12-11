@@ -9,26 +9,32 @@ library(sf)
 library(exactextractr)
 library(readr)
 
+# Set up - DW
+CONSP_DATA_MARC <- "C:/Data/PRZ/Conservation_Profiles_Data"
+PROJECT_ROOT <- "C:/Data/PRZ/CONSP"
+PROJECT_FOLDER <- "TEST"
+PROJECT_DIR <- file.path(PROJECT_ROOT,PROJECT_FOLDER)
+setwd(PROJECT_DIR)
+
 # set ecoregion
 eco <- 96
 
 # open ERAP table
-erap <- st_read("C:/Users/marc.edwards/Documents/PROJECTS/Canada_wide_ecoregion_assessments/output/ERAP_ecoregions.gdb", "ERAP_ecoregions") %>%
+erap <- st_read(file.path(CONSP_DATA_MARC, "ERAP_ecoregions.gdb"), "ERAP_ecoregions") %>%
   st_drop_geometry()
 
 # subset to ecoregion
 erap <- erap[erap$ECOREGION == eco,]
 
 # Load project
-project_sf <- st_read("test_project.shp") %>%
+project_sf <- st_read("aoi/test_project.shp") %>%
   summarise(geometry = st_union(.)) %>%
   st_cast("POLYGON")
 
 # Open WTW solution
 # Open solution
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/Canada_wtw_2024.tif
-s1 <- rast("C:/Users/marc.edwards/Documents/PROJECTS/Canada_wide_ecoregion_assessments/processing/prioritizr/ecozones/Canada_wtw_2024.tif")
-
+s1 <- rast(file.path(CONSP_DATA_MARC, "wtw/Canada_wtw_2024.tif"))
 
 tib <- tibble(
   project_area_km = NA,
@@ -58,15 +64,15 @@ tib$Project_Shoreline_km <- st_read("habitat/habitat.gdb/", "shoreline_project_t
 ### THREATS ###
 # Load threat data - Not currently reporting on Human Intrusion or Pollution
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_fr2022_r90_merged_prj_30.tif
-forestry <- rast("C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_fr2022_r90_merged_prj_30.tif")
+forestry <- rast(file.path(CONSP_DATA_MARC,"Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_fr2022_r90_merged_prj_30.tif"))
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_tr2022_r90_merged_prj_30.tif
-transport <- rast("C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_tr2022_r90_merged_prj_30.tif")
+transport <- rast(file.path(CONSP_DATA_MARC, "Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_tr2022_r90_merged_prj_30.tif"))
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_en2022_r90_merged_prj_30.tif
-energy <- rast("C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_en2022_r90_merged_prj_30.tif")
+energy <- rast(file.path(CONSP_DATA_MARC,"Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_en2022_r90_merged_prj_30.tif"))
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_bu2022_r90_merged_prj_30.tif
-builtup <- rast("C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_bu2022_r90_merged_prj_30.tif")
+builtup <- rast(file.path(CONSP_DATA_MARC, "Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_bu2022_r90_merged_prj_30.tif"))
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_ag2022_r90_merged_prj_30.tif
-agriculture <- rast("C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_ag2022_r90_merged_prj_30.tif")
+agriculture <- rast(file.path(CONSP_DATA_MARC,"Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_ag2022_r90_merged_prj_30.tif"))
 
 # calculate conversion factor to km2
 km2_conversion <- prod(res(forestry)/1000)
@@ -93,9 +99,9 @@ tib$Agriculture_km2 <- exactextractr::exact_extract(agriculture, project_sf, sum
 
 # Load intact and not-intact
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_2022_r90_merged_prj_30_intact.tif
-intact <- rast("C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30_intact.tif")
+intact <- rast(file.path(CONSP_DATA_MARC, "Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30_intact.tif"))
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_2022_r90_merged_prj_30_modified.tif
-modified <- rast("C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30_modified.tif")
+modified <- rast(file.path(CONSP_DATA_MARC, "Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30_modified.tif"))
 
 # calculate conversion factor to km2
 km2_conversion <- prod(res(intact)/1000)
