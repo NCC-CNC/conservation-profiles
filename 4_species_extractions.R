@@ -20,23 +20,31 @@ library(openxlsx)
 
 terra::gdalCache(size = 16000)
 
+# Set up - DW
+CONSP_DATA_MARC <- "C:/Data/PRZ/Conservation_Profiles_Data"
+PROJECT_ROOT <- "C:/Data/PRZ/CONSP"
+PROJECT_FOLDER <- "TEST"
+PROJECT_DIR <- file.path(PROJECT_ROOT,PROJECT_FOLDER)
+setwd(PROJECT_DIR)
+
+
 # Load project
-project_sf <- st_read("test_project.shp") %>%
+project_sf <- st_read("aoi/test_project.shp") %>%
   summarise(geometry = st_union(.)) %>%
   st_cast("POLYGON")
 
 # Load CPCAD + NCC layer
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/protected_areas_2024.gdb/cpcad_ncc_dslv_july2024
-cpcad_ncc <- st_read("C:/Users/marc.edwards/Documents/gisdata/protected_areas_2024/ProtectedConservedArea.gdb", "cpcad_ncc_dslv_july2024")
+cpcad_ncc <- st_read(file.path(CONSP_DATA_MARC, "ProtectedConservedArea.gdb"), "cpcad_ncc_dslv_july2024")
 
 # Load ecoregions - using terrestrial version of ecoregions for this example
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/ecoregions_dslv_clipped_to_2016_census_boundary.shp
-ecoregion_sf <- st_read("C:/Users/marc.edwards/Documents/gisdata/national_ecological_framework/Ecoregions/ecoregions_dslv_clipped_to_2016_census_boundary.shp") %>%
+ecoregion_sf <- st_read(file.path(CONSP_DATA_MARC, "national_ecological_framework/Ecoregions/ecoregions_dslv_clipped_to_2016_census_boundary.shp")) %>%
   filter(ECOREGION %in% c(96)) %>%
   mutate(geometry = st_union(.))
 
 ### open meta data ###
-input_data_path <- "C:/Data/PRZ/WTW_DATA/WTW_NAT_DATA_20240522"
+input_data_path <- file.path(CONSP_DATA_MARC, "WTW_NAT_DATA_20240522")
 species_meta_path <- file.path(input_data_path, "WTW_NAT_SPECIES_METADATA.xlsx")
 
 tibbles <- list()
@@ -54,7 +62,14 @@ species_meta$National_Pct_Goal <- species_meta$National_Pct_Goal * 100
 ######################
 
 # Get list of species tif file paths
-files <- list.files(file.path("C:/Users/marc.edwards/Documents/PROJECTS/Canada_wide_ecoregion_assessments/processing/species/Tiffs/"), pattern = "^T_.*.tif$", full.names = TRUE)
+files <- list.files(file.path(CONSP_DATA_MARC, "species/Tiffs"), pattern = "^T_.*.tif$", full.names = TRUE)
+
+# Check for invalid UTF-8 strings
+invalid_files <- files[!validUTF8(files)]
+if (length(invalid_files) > 0) {
+  print("Invalid file paths:")
+  print(invalid_files)
+}
 
 # load all tiffs 
 sp_all <- rast(files)
