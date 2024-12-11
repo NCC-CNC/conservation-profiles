@@ -8,19 +8,25 @@ arcpy.env.overwriteOutput = True
 
 ### SETUP ################################
 
+# Set up - DW
+CONSP_DATA_MARC = "C:/Data/PRZ/Conservation_Profiles_Data"
+PROJECT_ROOT = "C:/Data/PRZ/CONSP"
+PROJECT_FOLDER = "TEST"
+PROJECT_DIR = os.path.join(PROJECT_ROOT, PROJECT_FOLDER)
+
 # Set prj
-ncc_prj = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/Forest_LC_30m_2022.tif" # This needs to point to any file with the NCC Albers prj
+ncc_prj = "{}/habitat_metrics_Jul24_2024/Forest_LC_30m_2022.tif".format(CONSP_DATA_MARC) # This needs to point to any file with the NCC Albers prj
 arcpy.env.outputCoordinateSystem = arcpy.Describe(ncc_prj).spatialReference
 
 # Create output gdb for vectors
-out = "../output/Maps/vectors.gdb"
+out = "{}/output/Maps/vectors.gdb".format(PROJECT_DIR)
 if not arcpy.Exists(out):
-    arcpy.CreateFileGDB_management("../output/Maps", "vectors.gdb")
+    arcpy.CreateFileGDB_management("{}/output/Maps".format(PROJECT_DIR), "vectors.gdb")
 
 # Prep the AOI boundary
 print("Prep AOI...")
 # S drive location: S:/ERAPs/output/ERAP_ecoregions.gdb/ERAP_ecoregions
-ecoregions_path = "C:/Users/marc.edwards/Documents/gisdata/national_ecological_framework/Ecoregions/ecoregions.shp" # use the full ecoregion feature here so we can see all the data
+ecoregions_path = "{}/national_ecological_framework/Ecoregions/ecoregions.shp".format(CONSP_DATA_MARC) # use the full ecoregion feature here so we can see all the data
 aoi = out + "/aoi"
 
 eco_list = 96
@@ -34,44 +40,44 @@ arcpy.management.Dissolve(ecoregions, aoi)
 
 # vectors
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/protected_areas_2024.gdb/cpcad_ncc_dslv_july2024
-cpcad_ncc_protected = "C:/Users/marc.edwards/Documents/gisdata/protected_areas_2024/ProtectedConservedArea.gdb/cpcad_ncc_dslv_july2024"
-project_boundary = "../test_project.shp"
+cpcad_ncc_protected = "{}/ProtectedConservedArea.gdb/cpcad_ncc_dslv_july2024".format(CONSP_DATA_MARC)
+project_boundary = "{}/aoi/test_project.shp".format(PROJECT_DIR)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/Habitat/Grassland/Processing.gdb/RasterToPoly/AAFC_LUTS_2020
-grassland_path = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/habitat.gdb/AAFC_LUTS_2020"
+grassland_path = "{}/habitat_metrics_Jul24_2024/habitat.gdb/AAFC_LUTS_2020".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/Habitat/Wetland/Processing.gdb/canvec_saturated_soil_2_merge_20230201_pw_dissolve
-wetland_path = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/habitat.gdb/canvec_saturated_soil_2_merge_20230201_pw_dissolve"
+wetland_path = "{}/habitat.gdb/canvec_saturated_soil_2_merge_20230201_pw_dissolve".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/Habitat/Lakes/_archive/Z_DELETE/Waterbody.gdb/waterbody_2_proj_diss
-lakes_path = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/habitat.gdb/waterbody_2_proj_diss"
+lakes_path = "{}/habitat_metrics_Jul24_2024/habitat.gdb/waterbody_2_proj_diss".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/shoreline.gdb/shoreline_merge
-shoreline_path = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/habitat.gdb/shoreline_merge"
+shoreline_path = "{}/habitat_metrics_Jul24_2024/habitat.gdb/shoreline_merge".format(CONSP_DATA_MARC)
 # S drive location: S:/hydrology_data_temp_location/NHN/master_rivers.gdb/master_rivers
-rivers_path = "C:/Users/marc.edwards/Documents/gisdata/hydrology/NHN/master_rivers.gdb/master_rivers"
+rivers_path = "{}/habitat_metrics_Jul24_2024/master_rivers.gdb/master_rivers".format(CONSP_DATA_MARC)
 
 # tifs
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/Canada_wtw_2024.tif
-where_to_work_prioritization = "C:/Users/marc.edwards/Documents/PROJECTS/Canada_wide_ecoregion_assessments/processing/prioritizr/ecozones/Canada_wtw_2024.tif"
+where_to_work_prioritization = "{}/wtw/Canada_wtw_2024.tif".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/NAT_1KM/biod/rich/biod_rich.tif
-species_biodiversity_count = "C:/Data/PRZ/WTW_DATA/WTW_NAT_DATA_20240522/biodiversity/richness/BOID_COUNT.tif"
+species_biodiversity_count = "{}/WTW_NAT_DATA_20240522/biodiversity/richness/BOID_COUNT.tif".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/NAT_1KM/biod/rich/sar_rich.tif
-species_sar_count = "C:/Data/PRZ/WTW_DATA/WTW_NAT_DATA_20240522/biodiversity/richness/ECCC_SAR_COUNT.tif"
+species_sar_count = "{}/WTW_NAT_DATA_20240522/biodiversity/richness/ECCC_SAR_COUNT.tif".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/Habitat/Forest/Forest_LC_30m_2022.tif
-habitat_forests = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/Forest_LC_30m_2022.tif"
+habitat_forests = "{}/habitat_metrics_Jul24_2024/Forest_LC_30m_2022.tif".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_2022_r90_merged_prj_30_intact.tif
-intact_land = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30_intact.tif"
+intact_land = "{}/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30_intact.tif".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_2022_r90_merged_prj_30_modified.tif
-modified_land = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30_modified.tif"
+modified_land = "{}/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30_modified.tif".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_fr2022_r90_merged_prj_30.tif
-threat_forestry = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_fr2022_r90_merged_prj_30.tif"
+threat_forestry = "{}/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_fr2022_r90_merged_prj_30.tif".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_tr2022_r90_merged_prj_30.tif
-threat_transport = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_tr2022_r90_merged_prj_30.tif"
+threat_transport = "{}/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_tr2022_r90_merged_prj_30.tif".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_en2022_r90_merged_prj_30.tif
-threat_energy = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_en2022_r90_merged_prj_30.tif"
+threat_energy = "{}/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_en2022_r90_merged_prj_30.tif".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_bu2022_r90_merged_prj_30.tif
-threat_builtup = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_bu2022_r90_merged_prj_30.tif"
+threat_builtup = "{}/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_bu2022_r90_merged_prj_30.tif".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_ag2022_r90_merged_prj_30.tif
-threat_agriculture = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_ag2022_r90_merged_prj_30.tif"
+threat_agriculture = "{}/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_ag2022_r90_merged_prj_30.tif".format(CONSP_DATA_MARC)
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/HM_CA_2022_r90_merged_prj_30.tif
-threat_human_modification = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30.tif"
+threat_human_modification = "{}/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30.tif".format(CONSP_DATA_MARC)
 
 
 ### PROCESSING ################################
@@ -94,17 +100,17 @@ arcpy.analysis.Clip(shoreline_path, aoi, out + "/habitat_shoreline")
 '''
 # Clip all rasters to AOI
 print("Clip rasters...")
-arcpy.Clip_management(where_to_work_prioritization, "", "../output/Maps/where_to_work_prioritization.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
-arcpy.management.Clip(species_biodiversity_count, "", "../output/Maps/species_biodiversity_count.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
-arcpy.management.Clip(species_sar_count, "", "../output/Maps/species_sar_count.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
-arcpy.management.Clip(habitat_forests, "", "../output/Maps/habitat_forests.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
-arcpy.management.Clip(intact_land, "", "../output/Maps/intact_land.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
-arcpy.management.Clip(modified_land, "", "../output/Maps/modified_land.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
-arcpy.management.Clip(threat_forestry, "", "../output/Maps/threat_forestry.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
-arcpy.management.Clip(threat_transport, "", "../output/Maps/threat_transport.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
-arcpy.management.Clip(threat_energy, "", "../output/Maps/threat_energy.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
-arcpy.management.Clip(threat_builtup, "", "../output/Maps/threat_builtup.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
-arcpy.management.Clip(threat_agriculture, "", "../output/Maps/threat_agriculture.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
-arcpy.management.Clip(threat_human_modification, "", "../output/Maps/threat_human_modification.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.Clip_management(where_to_work_prioritization, "", "{}/output/Maps/where_to_work_prioritization.tif".format(CONSP_DATA_MARC), in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.management.Clip(species_biodiversity_count, "", "{}/output/Maps/species_biodiversity_count.tif".format(CONSP_DATA_MARC), in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.management.Clip(species_sar_count, "", "{}/output/Maps/species_sar_count.tif".format(CONSP_DATA_MARC), in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.management.Clip(habitat_forests, "", "{}/output/Maps/habitat_forests.tif".format(CONSP_DATA_MARC), in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.management.Clip(intact_land, "", "{}/output/Maps/intact_land.tif".format(CONSP_DATA_MARC), in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.management.Clip(modified_land, "", "{}/output/Maps/modified_land.tif".format(CONSP_DATA_MARC), in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.management.Clip(threat_forestry, "", "{}/output/Maps/threat_forestry.tif".format(CONSP_DATA_MARC), in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.management.Clip(threat_transport, "", "{}/output/Maps/threat_transport.tif".format(CONSP_DATA_MARC), in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.management.Clip(threat_energy, "", "{}/output/Maps/threat_energy.tif".format(CONSP_DATA_MARC), in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.management.Clip(threat_builtup, "", "{}/output/Maps/threat_builtup.tif".format(CONSP_DATA_MARC), in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.management.Clip(threat_agriculture, "", "{}/output/Maps/threat_agriculture.tif".format(CONSP_DATA_MARC), in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
+arcpy.management.Clip(threat_human_modification, "", "{}/output/Maps/threat_human_modification.tif", in_template_dataset = aoi, clipping_geometry = "ClippingGeometry")
 
 
