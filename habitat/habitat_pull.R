@@ -40,7 +40,7 @@ aoi$AREA_HA <- round(drop_units(set_units(st_area(aoi), value = ha)), 2) # Add A
 # Get data
 habitat_configs <- read.csv("habitat/habitat_configs.csv")
 forest_path <- habitat_configs$PATH[habitat_configs$HABITAT == "Forest"]
-# Pass these variables to python
+# Catch these variables in python
 wet_path <- habitat_configs$PATH[habitat_configs$HABITAT == "Wetland"]
 grass_path <- habitat_configs$PATH[habitat_configs$HABITAT == "Grassland"]
 lake_path <- habitat_configs$PATH[habitat_configs$HABITAT == "Lakes"]
