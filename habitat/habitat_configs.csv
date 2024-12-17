@@ -1,0 +1,7 @@
+HABITAT,PATH,SHP_NAME,UNIT,DATATYPE
+Forest,C:/Data/PRZ/Conservation_Profiles_Data/habitat_metrics_Jul24_2024/Forest_LC_30m_2022.tif,FOREST,m2,raster
+Wetland,C:/Data/PRZ/Conservation_Profiles_Data/habitat_metrics_Jul24_2024/habitat.gdb/canvec_saturated_soil_2_merge_20230201_pw_dissolve,WETLAND,ha,vector
+Grassland,C:/Data/PRZ/Conservation_Profiles_Data/habitat_metrics_Jul24_2024/habitat.gdb/AAFC_LUTS_2020,GRASSLAND,ha,vector
+Lakes,C:/Data/PRZ/Conservation_Profiles_Data/habitat_metrics_Jul24_2024/habitat.gdb/waterbody_2_proj_diss,LAKES,ha,vector
+Rivers,C:/Data/PRZ/Conservation_Profiles_Data/habitat_metrics_Jul24_2024/master_rivers.gdb/master_rivers,RIVERS,km,vector
+Shoreline,C:/Data/PRZ/Conservation_Profiles_Data/habitat_metrics_Jul24_2024/habitat.gdb/shoreline_merge,SHORELINE,km,vector
