@@ -15,6 +15,9 @@
 #
 #===============================================================================
 
+# Start timer
+start_time <- Sys.time()
+
 library(exactextractr)
 library(sf)
 library(terra)
@@ -70,3 +73,7 @@ for hab_data, hab_col in zip(habitat_data, habitat_cols):
     uid_col = "HAB_ID"
   )
 ')
+
+# End timer
+end_time <- Sys.time()
+end_time - start_time
