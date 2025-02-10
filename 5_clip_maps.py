@@ -3,16 +3,16 @@
 
 import arcpy
 from arcpy.sa import *
+import pandas as pd
 
 arcpy.env.overwriteOutput = True
 
 ### SETUP ################################
 
 # Set up - DW
+PRJ_PATHS = pd.read_csv("C:/Data/PRZ/CONSP/REG_QC/REG_QC_JOLIN/metadata/input_paths.csv")
 CONSP_DATA_MARC = "C:/Data/PRZ/Conservation_Profiles_Data"
-PROJECT_ROOT = "C:/Data/PRZ/CONSP"
-PROJECT_FOLDER = "TEST"
-PROJECT_DIR = os.path.join(PROJECT_ROOT, PROJECT_FOLDER)
+PROJECT_DIR = PRJ_PATHS["Project_Folder"].values[0]
 
 # Set prj
 ncc_prj = "{}/habitat_metrics_Jul24_2024/Forest_LC_30m_2022.tif".format(CONSP_DATA_MARC) # This needs to point to any file with the NCC Albers prj

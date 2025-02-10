@@ -8,11 +8,9 @@ library(dplyr)
 library(readr)
 
 # Set up - DW
+PRJ_PATHS <- read.csv("C:/Data/PRZ/CONSP/REG_QC/BIERE/metadata/input_paths.csv")
 CONSP_DATA_MARC <- "C:/Data/PRZ/Conservation_Profiles_Data"
-PROJECT_ROOT <- "C:/Data/PRZ/CONSP"
-PROJECT_FOLDER <- "TEST"
-PROJECT_DIR <- file.path(PROJECT_ROOT,PROJECT_FOLDER)
-setwd(PROJECT_DIR)
+setwd(PRJ_PATHS$Project_Folder)
 
 # create output folder
 if(!dir.exists("habitat")){
@@ -20,7 +18,7 @@ if(!dir.exists("habitat")){
 }
 
 # Load project
-project_sf <- st_read(file.path("aoi/test_project.shp")) %>%
+project_sf <- st_read(file.path("aoi", PRJ_PATHS$Aoi_Shp)) %>%
   summarise(geometry = st_union(.)) %>%
   st_cast("POLYGON")
 

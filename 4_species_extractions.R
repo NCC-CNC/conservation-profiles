@@ -21,15 +21,12 @@ library(openxlsx)
 terra::gdalCache(size = 16000)
 
 # Set up - DW
+PRJ_PATHS <- read.csv("C:/Data/PRZ/CONSP/REG_AT/POINT_PLEASANT_2/metadata/input_paths.csv")
 CONSP_DATA_MARC <- "C:/Data/PRZ/Conservation_Profiles_Data"
-PROJECT_ROOT <- "C:/Data/PRZ/CONSP"
-PROJECT_FOLDER <- "TEST"
-PROJECT_DIR <- file.path(PROJECT_ROOT,PROJECT_FOLDER)
-setwd(PROJECT_DIR)
-
+setwd(PRJ_PATHS$Project_Folder)
 
 # Load project
-project_sf <- st_read("aoi/test_project.shp") %>%
+project_sf <- st_read(file.path("aoi", PRJ_PATHS$Aoi_Shp)) %>%
   summarise(geometry = st_union(.)) %>%
   st_cast("POLYGON")
 
@@ -40,7 +37,7 @@ cpcad_ncc <- st_read(file.path(CONSP_DATA_MARC, "ProtectedConservedArea.gdb"), "
 # Load ecoregions - using terrestrial version of ecoregions for this example
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/xCANADA_WIDE_SOURCE/ecoregions_dslv_clipped_to_2016_census_boundary.shp
 ecoregion_sf <- st_read(file.path(CONSP_DATA_MARC, "national_ecological_framework/Ecoregions/ecoregions_dslv_clipped_to_2016_census_boundary.shp")) %>%
-  filter(ECOREGION %in% c(96)) %>%
+  filter(ECOREGION %in% c(PRJ_PATHS$Ecoregion)) %>%
   mutate(geometry = st_union(.))
 
 ### open meta data ###

@@ -8,19 +8,19 @@
 
 import arcpy
 import os
+import pandas as pd
 
 arcpy.env.overwriteOutput = True
 
 ### SETUP ################################
 
 # Set up - DW
+PRJ_PATHS = pd.read_csv("C:/Data/PRZ/CONSP/REG_QC/BIERE/metadata/input_paths.csv")
 CONSP_DATA_MARC = "C:/Data/PRZ/Conservation_Profiles_Data"
-PROJECT_ROOT = "C:/Data/PRZ/CONSP"
-PROJECT_FOLDER = "TEST"
-PROJECT_DIR = os.path.join(PROJECT_ROOT, PROJECT_FOLDER)
+PROJECT_DIR = PRJ_PATHS["Project_Folder"].values[0]
 
 # Set input paths
-project_path = "{}/aoi/test_project.shp".format(PROJECT_DIR)
+AOI_SHP = "{}/aoi/{}".format(PROJECT_DIR, PRJ_PATHS["Aoi_Shp"].values[0])
 
 # S drive location: S:/CONS_TECH/PRZ/DATA/PREP/Habitat/Grassland/ Processing.gdb/RasterToPoly/AAFC_LUTS_2020
 grassland_path = "{}/habitat_metrics_Jul24_2024/habitat.gdb/AAFC_LUTS_2020".format(CONSP_DATA_MARC)
@@ -84,7 +84,7 @@ for h in ["grassland", "wetland", "lakes", "shoreline", "rivers"]:
 
     # Clip habitat to the project
     print("clip...")
-    arcpy.analysis.PairwiseClip(h_path, project_path, clip_project)
+    arcpy.analysis.PairwiseClip(h_path, AOI_SHP, clip_project)
     arcpy.analysis.PairwiseDissolve(clip_project, clip_project_dslv)
     arcpy.management.DeleteField(clip_project_dslv, colname)
     arcpy.management.AddField(clip_project_dslv, colname + "_project", "DOUBLE")
