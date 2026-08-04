@@ -11,7 +11,7 @@ Regardless of which reference landscape is used, the project's own real ecoregio
 
 ## Running in the shared workspace
 
-This codebase lives in **one shared, git-synced location** (`CODE_DIR`) rather than being copied per project. Only two small, per-project files live outside it: `run.R` and `setup.toml`.
+This codebase lives in **one shared, git-synced location** (`CODE_DIR`) rather than being copied per project. Only two small, per-project files live outside it: `run.R` (copied from `run_template.R`) and `setup.toml` (copied from `setup_template.toml`).
 
 **One-time, per machine:**
 1. Clone/pull this repo to a fixed location (e.g. `C:/GIS/conservation-profiles`) — this is `CODE_DIR`.
@@ -25,14 +25,14 @@ This codebase lives in **one shared, git-synced location** (`CODE_DIR`) rather t
 1. Create a new folder for the project (anywhere — it does not need to be inside `CODE_DIR`).
 2. Copy `run_template.R` from the repo root into that folder and rename it `run.R`.
 3. Open `run.R` and confirm `CODE_DIR` points at the shared checkout from step 1 (this should already match — it's the same for every project on a given machine, so it normally needs no edits).
-4. Create a `setup.toml` in the same folder (see below) with this project's paths.
+4. Copy `setup_template.toml` from the repo root into that folder, rename it `setup.toml`, and update the `[project]` fields (and `[custom_landscape]`, if using one) with this project's paths — see below.
 5. Run `run.R`. It sources `__pipeline__.R` from `CODE_DIR` and `setup.toml` from your project folder.
 
 Outputs (`<project_name>_conservation_profile.xlsx`/`.pdf`) are written to `project_dir` as set in `setup.toml` — this can be the project folder itself or anywhere else.
 
-## `setup.toml` reference
+## `setup_template.toml` reference
 
-Fields you set per project:
+Fields you set per project (after copying the template to `setup.toml`):
 
 | Section | Field | Notes |
 |---|---|---|
@@ -58,6 +58,6 @@ Driven by `R/__pipeline__.R`, in order:
 
 - Windows, R 4.4+ (packages auto-install on first run).
 - ArcGIS Pro installed with a licensed `arcpy` (used for vector intersections via `reticulate`) — the Python environment path is set in `arcgis_config.toml` (see "Running in the shared workspace" below).
-- Access to the fixed-path reference datasets (habitat, pressures, WTW, protected areas, species rasters, `ERAP_ecoregions.gdb`) referenced in `setup.toml`.
+- Access to the fixed-path reference datasets (habitat, pressures, WTW, protected areas, species rasters, `ERAP_ecoregions.gdb`) referenced in `setup_template.toml`.
 
 

@@ -2,4 +2,4 @@
 .Rhistory
 .RData
 .Ruserdata
-setup_local_paths.toml
+setup.toml
