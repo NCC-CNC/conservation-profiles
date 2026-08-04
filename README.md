@@ -9,6 +9,8 @@ The reference landscape is one of:
 
 Regardless of which reference landscape is used, the project's own real ecoregion/ecozone (`ECOREGION`, `REGION_NAM`, `ECOZONE`, `ZONE_NAME`, etc.) are always shown in the report — the reference landscape only changes what the project's stats are being *compared against*.
 
+Note that custom landscapes take significantly longer to process. Up to 1 hr for large landscapes compared to 1-2 minutes for default or forced ecoregions.
+
 ## Running in the shared workspace
 
 This codebase lives in **one shared, git-synced location** (`CODE_DIR`) rather than being copied per project. Only two small, per-project files live outside it: `run.R` (copied from `run_template.R`) and `setup.toml` (copied from `setup_template.toml`).
