@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Conservation Profile</title>
+<style>
+  /* ===== Local fonts (offline-safe). Place the 6 .woff2 files in ./fonts/ =====
+     Fetch them once (stable Fontsource CDN):
+       mkdir -p fonts && cd fonts
+       base=https://cdn.jsdelivr.net/fontsource/fonts
+       for w in 400 600 700; do
+         curl -sLo source-serif-4-$w.woff2 $base/source-serif-4@latest/latin-$w-normal.woff2
+         curl -sLo source-sans-3-$w.woff2  $base/source-sans-3@latest/latin-$w-normal.woff2
+       done
+  */
+  @font-face{font-family:"Source Serif 4";font-weight:400;font-display:swap;src:url("fonts/source-serif-4-400.woff2") format("woff2");}
+  @font-face{font-family:"Source Serif 4";font-weight:600;font-display:swap;src:url("fonts/source-serif-4-600.woff2") format("woff2");}
+  @font-face{font-family:"Source Serif 4";font-weight:700;font-display:swap;src:url("fonts/source-serif-4-700.woff2") format("woff2");}
+  @font-face{font-family:"Source Sans 3";font-weight:400;font-display:swap;src:url("fonts/source-sans-3-400.woff2") format("woff2");}
+  @font-face{font-family:"Source Sans 3";font-weight:600;font-display:swap;src:url("fonts/source-sans-3-600.woff2") format("woff2");}
+  @font-face{font-family:"Source Sans 3";font-weight:700;font-display:swap;src:url("fonts/source-sans-3-700.woff2") format("woff2");}
+  /* ===== NCC brand tokens ===== */
+  :root{
+    --deep-green:#2D602E; --vibrant-green:#33862B; --light-green:#82CC2E;
+    --blue:#0075E4; --purple:#7A59FC; --orange:#FF5B00; --yellow:#FFC41D;
+    --gray:#6F6F6F; --line:#E4E2D8; --ink:#1c1c1c;
+    --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+    --sans:"Source Sans 3",system-ui,Segoe UI,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:#6b6f68;font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;}
+
+  /* One US-Letter landscape page: 11in x 8.5in = 1056 x 816 px @96dpi */
+  .page{
+    position:relative;
+    width:1056px;height:816px;margin:24px auto;background:#fff;
+    box-shadow:0 24px 70px rgba(0,0,0,.35);display:flex;overflow:hidden;
+  }
+
+  /* LEFT green panel (the landscape) */
+  .panel-left{width:424px;flex-shrink:0;background:var(--deep-green);color:#fff;
+    padding:24px 36px;display:flex;flex-direction:column;gap:14px;}
+  .logo{width:172px;height:46px;object-fit:contain;object-position:left center;}
+  .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;}
+  .panel-left .eyebrow{color:#b7e08a;}
+  .panel-left h1{font-family:var(--serif);font-size:27px;font-weight:600;line-height:1.12;margin:4px 0 0;}
+  .kpi-row{display:flex;flex-wrap:wrap;gap:14px;align-items:stretch;}
+  .kpi-lite{min-width:120px;min-height:95px;}
+  .kpi-lite{flex:1;background:rgba(255,255,255,.09);border-radius:8px;padding:13px 15px;}
+  .kpi-lite .lbl{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#cfe3c2;}
+  .kpi-lite .val{font-family:var(--serif);font-size:30px;font-weight:600;line-height:1.1;}
+  .panel-right .press-title{color:var(--deep-green);}
+  .donut-wrap{display:flex;align-items:center;gap:18px;}
+  .donut{position:relative;width:84px;height:84px;flex-shrink:0;border-radius:50%;}
+  .donut .hole{position:absolute;inset:11px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .donut .pct{font-family:var(--serif);font-size:18px;font-weight:700;line-height:1;}
+  .donut .cap{font-size:9px;letter-spacing:.08em;text-transform:uppercase;}
+  .legend{flex:1;font-size:13px;}
+  .legend .h{font-weight:700;margin-bottom:8px;}
+  .legend .li{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .legend .sw{width:11px;height:11px;border-radius:3px;}
+  .legend strong{margin-left:auto;}
+  .press-title{font-size:12px;font-weight:700;letter-spacing:.04em;margin-bottom:8px;}
+  .panel-left .press-title{color:#cfe3c2;}
+  .press-list{display:flex;flex-direction:column;gap:7px;}
+
+  /* RIGHT white panel (the project) */
+  .panel-right{flex:1;padding:24px 40px;display:flex;flex-direction:column;gap:14px;}
+  .doc-head{display:flex;align-items:flex-start;justify-content:space-between;}
+  .doc-title{font-family:var(--serif);font-size:25px;font-weight:600;line-height:1;}
+  .meta{display:flex;gap:16px;margin-top:6px;font-size:12px;}
+  .meta .k{letter-spacing:.1em;text-transform:uppercase;color:var(--gray);font-size:10px;}
+  .proj-tag{text-align:right;padding-right:56px;}
+  .proj-tag .k{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);}
+  .proj-tag .v{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--deep-green);white-space:nowrap;}
+  .section-head{border-top:2px solid var(--line);padding-top:16px;}
+  /* shared alignment bands (left & right line up row-for-row) */
+  .hdr-band{min-height:52px;display:flex;align-items:center;}
+  .hdr-band > *{width:100%;}
+  .band-head{border-top:2px solid var(--line);padding-top:12px;min-height:78px;}
+  .panel-left .band-head{border-top-color:rgba(255,255,255,.28);}
+  .stats-band{min-height:224px;}
+  .intact-band{height:116px;flex:none;display:flex;align-items:stretch;}
+  .intact-band > *{width:100%;box-sizing:border-box;}
+  .intact-band-dup{}
+  .panel-right .eyebrow{color:var(--vibrant-green);}
+  .panel-right h2{font-family:var(--serif);font-size:27px;font-weight:600;line-height:1.12;margin:4px 0 0;}
+  .tile-grid{display:flex;flex-wrap:wrap;gap:14px;align-items:stretch;}
+  .tile{border:1px solid var(--line);border-radius:8px;padding:13px 16px;}
+  .tile .lbl{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--gray);}
+  .tile .val{font-family:var(--serif);font-size:28px;font-weight:600;line-height:1.1;}
+  .tile .val .unit{font-size:14px;color:var(--gray);font-family:var(--sans);}
+  .intact-card{display:flex;align-items:center;gap:20px;border:1px solid var(--line);border-radius:8px;padding:14px 18px;}
+  .fill{flex:1;}
+  .foot{margin-top:auto;padding-top:10px;font-size:10px;color:var(--gray);}
+  .wm-ribbon{position:absolute;top:38px;right:-72px;width:280px;transform:rotate(45deg);z-index:20;
+    background:var(--yellow);color:#4a3a00;text-align:center;font-family:var(--sans);font-weight:800;
+    font-size:16px;letter-spacing:.2em;padding:9px 0;box-shadow:0 3px 12px rgba(0,0,0,.22);pointer-events:none;}
+  .foot-dark{color:#9dc47f;}
+
+  @media print{
+    @page{size:11in 8.5in;margin:0;}
+    body{background:#fff;}
+    .page{margin:0;box-shadow:none;width:11in;height:8.5in;break-inside:avoid;}
+    .page + .page{break-before:page;}
+  }
+</style>
+</head>
+<body>
+<div class="page" id="page"><!-- rendered by script --></div>
+<div class="page" id="page2"><!-- habitat page, rendered by script --></div>
+<div class="page" id="page3"><!-- other metrics page, rendered by script --></div>
+
+<script>
+/* ============================================================
+   REPORT DATA  — this is the ONLY block your pipeline replaces.
+   Populate it per ecoregion/project, then render the page to PDF.
+   pressures[].pct = % of ecoregion (left) / % of project (right).
+   ============================================================ */
+const REPORT_DATA =
+/* >>> BEGIN_REPORT_DATA (pipeline replaces this object) <<< */
+{
+  projectName: "Diamond 7",
+  ecoregion:   "Western Alberta Upland",
+  ecozone:     "Boreal Plain",
+  assessmentTitle: "Western Alberta Upland",
+  logoUrl: "NCC_Wordmark_E_Logo_KO.png",   // reverse/KO wordmark, path relative to this HTML
+  generatedDate: "",                        // leave "" to auto-fill with today, or pass e.g. "July 14, 2026"
+  prototype: true,                          // set false to hide the PROTOTYPE ribbon
+
+  ecoregionData: {
+    // Add/remove/reorder metrics freely — each row renders one tile.
+    // color: yellow | light-green | white | any hex.  unit: appended after value.
+    stats: [
+      { label: "Area protected", value: 1.6,  unit: "%", color: "yellow" },
+      { label: "WtW priority",   value: 23.8, unit: "%", color: "light-green" }
+    ],
+    intactPct: 67.4,
+    modifiedPct: 32.6,
+    pressures: [                            // % of ecoregion
+      { name: "Energy and mining",            pct: 16.8 },
+      { name: "Forestry",                     pct: 13.7 },
+      { name: "Transport — lower intensity",  pct: 7.2 },
+      { name: "Transport — higher intensity", pct: 4.0 },
+      { name: "Agriculture",                  pct: 1.1 },
+      { name: "Urban and built up",           pct: 0.2 }
+    ]
+  },
+
+  projectData: {
+    // Add/remove/reorder metrics freely — each row renders one tile (2-col grid, wraps).
+    // color: deep-green | vibrant-green | blue | purple | orange | gray | any hex.
+    // unit is small/gray: use " ha", " / 512", "%", etc. Numeric values get thousands separators.
+    stats: [
+      { label: "Project area",             value: 2923, unit: " ha",    color: "deep-green",   basis: "calc(27% - 10px)" },
+      { label: "% of landscape",            value: "0.24%",              color: "light-green",  basis: "calc(27% - 10px)" },
+      { label: "Where to Work overlap",     value: 709,  unit: " ha", sub: "24.3% of project",   color: "blue",         basis: "calc(46% - 10px)" }
+    ],
+    intactPct: 89.9,  intactHa: 2629,
+    modifiedPct: 10.1, modifiedHa: 294,
+    pressures: [                            // ha + % of project
+      { name: "Energy and mining",            ha: 70,  pct: 2.4 },
+      { name: "Forestry",                     ha: 40,  pct: 1.4 },
+      { name: "Transport — lower intensity",  ha: 127, pct: 4.3 },
+      { name: "Transport — higher intensity", ha: 91,  pct: 3.1 },
+      { name: "Agriculture",                  ha: 44,  pct: 1.5 },
+      { name: "Urban and built up",           ha: 4,   pct: 0.2 }
+    ]
+  },
+
+  // ===== Habitat worksheet =====
+  // area[]   = habitats measured by area (ha); ecoregion value is % cover.
+  // linear[] = habitats measured by length (km); ecoregion value is total km.
+  habitat: {
+    area: [
+      { name: "Forest",    coverPct: 76.42, protectedPct: 1.72, wtwPct: 23.23, projectHa: 1225.65 },
+      { name: "Grassland", coverPct: 0.13,  protectedPct: 6.76, wtwPct: 33.10, projectHa: 91.21 },
+      { name: "Wetland",   coverPct: 4.51,  protectedPct: 1.57, wtwPct: 18.03, projectHa: 28.75 },
+      { name: "Lakes",     coverPct: 1.00,  protectedPct: 5.13, wtwPct: 40.00, projectHa: 12.84 }
+    ],
+    linear: [
+      { name: "Rivers",    ecoregionKm: 60915.16, protectedPct: 2.29, wtwPct: 23.01, projectKm: 23.20 },
+      { name: "Shoreline", ecoregionKm: 0,        protectedPct: 0,    wtwPct: 0,     projectKm: 0 }
+    ]
+  },
+
+  // ===== Species (page 2, below habitat) =====
+  species: {
+    ecoregion: {
+      total: 512,
+      atRisk: 32,
+      needProtection: 461,
+      atRiskNeedProtection: 25
+    },
+    project: {
+      total: 172,
+      atRisk: 0,
+      needProtection: 138,
+      atRiskNeedProtection: 0
+    }
+  },
+
+  other: [
+    { name: "Peatlands",      value: 4821,    unit: "ha",     projectPct: 16.5 },
+    { name: "Carbon Storage", value: 1230000, unit: "tonnes" }
+  ]
+}
+/* >>> END_REPORT_DATA <<< */
+;
+
+/* ============================================================
+   RENDERER — no need to edit below this line.
+   ============================================================ */
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const nf  = n => n.toLocaleString('en-CA');
+const fx  = (n,d=1) => Number(n).toFixed(d);
+const cvar = c => (c && c[0] === '#') ? c : `var(--${c || 'deep-green'})`;
+const fmtVal = v => (typeof v === 'number') ? nf(v) : esc(v);
+const GEN_DATE = REPORT_DATA.generatedDate || new Date().toLocaleDateString('en-CA', {year:'numeric', month:'long', day:'numeric'});
+
+// Green-panel metric tiles (the landscape)
+function statTilesLite(list){
+  return (list || []).map(s => `
+    <div class="kpi-lite"><div class="lbl">${esc(s.label)}</div>
+      <div class="val fit" style="color:${cvar(s.color)};white-space:nowrap;">${fmtVal(s.value)}${s.unit ? esc(s.unit) : ''}</div></div>`).join('');
+}
+// White-panel metric tiles (the project)
+function statTiles(list){
+  return (list || []).map(s => `
+    <div class="tile" style="flex:1 1 ${s.basis || 'calc(50% - 7px)'};min-width:0;"><div class="lbl">${esc(s.label)}</div>
+      <div class="val fit" style="color:${cvar(s.color)};white-space:nowrap;">${fmtVal(s.value)}${s.unit ? `<span class="unit">${esc(s.unit)}</span>` : ''}</div>${s.sub ? `<div class="unit" style="margin-top:2px;">${esc(s.sub)}</div>` : ''}</div>`).join('');
+}
+
+// Shrink a value's font-size until it fits its card width (handles very large numbers)
+function fitValues(root){
+  (root || document).querySelectorAll('.val.fit').forEach(el => {
+    el.style.fontSize = '';
+    let fs = parseFloat(getComputedStyle(el).fontSize);
+    let guard = 40;
+    while (el.scrollWidth > el.clientWidth + 1 && fs > 11 && guard-- > 0){ fs -= 1; el.style.fontSize = fs + 'px'; }
+  });
+}
+
+function donut(color, track, pct, textColor, holeBg, capColor){
+  return `<div class="donut" style="background:conic-gradient(${color} 0 ${pct}%, ${track} ${pct}% 100%)">
+      <div class="hole" style="background:${holeBg}">
+        <div class="pct" style="color:${textColor}">${fx(pct)}%</div>
+        <div class="cap" style="color:${capColor}">intact</div>
+      </div></div>`;
+}
+
+function pressureRows(list, {barColor, track, valueHtml, dark}){
+  const max = Math.max(...list.map(p => p.pct)) * 1.05 || 1;
+  return list.map(p => {
+    const w = Math.max(2, (p.pct / max) * 100);
+    return `<div style="display:grid;grid-template-columns:1fr ${dark?'42px':'92px'};align-items:center;gap:10px;">
+      <div>
+        <div style="font-size:11px;color:${dark?'#eaf3e2':'var(--ink)'};margin-bottom:3px;">${esc(p.name)}</div>
+        <div style="height:6px;border-radius:3px;background:${track};">
+          <div style="height:100%;border-radius:3px;background:${barColor};width:${w}%;"></div>
+        </div>
+      </div>
+      <div style="font-size:11px;text-align:right;${dark?'color:#fff;font-weight:600;':'color:var(--gray);'}">${valueHtml(p)}</div>
+    </div>`;
+  }).join('');
+}
+
+function speciesEcoCards(SP){
+  if(!SP) return '';
+  return `<div style="display:flex;gap:12px;margin-top:12px;">
+        <div style="flex:1;background:rgba(255,255,255,.09);border-radius:9px;padding:12px 15px;">
+          <div style="font-family:var(--serif);font-size:13px;font-weight:700;color:#fff;margin-bottom:10px;">All species</div>
+          <div style="display:flex;gap:14px;">
+            <div style="flex:1;"><div style="font-family:var(--serif);font-size:26px;font-weight:700;color:#fff;line-height:1;">${nf(SP.ecoregion.total)}</div><div style="font-size:9.5px;color:#cfe3c2;margin-top:4px;line-height:1.3;white-space:nowrap;">total species</div></div>
+            <div style="flex:1;"><div style="font-family:var(--serif);font-size:26px;font-weight:700;color:#fff;line-height:1;">${nf(SP.ecoregion.needProtection)}</div><div style="font-size:9.5px;color:#cfe3c2;margin-top:4px;line-height:1.3;white-space:nowrap;">need more protection</div></div>
+          </div>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,.09);border-radius:9px;padding:12px 15px;">
+          <div style="font-family:var(--serif);font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:10px;">Species at risk</div>
+          <div style="display:flex;gap:14px;">
+            <div style="flex:1;"><div style="font-family:var(--serif);font-size:26px;font-weight:700;color:var(--yellow);line-height:1;">${nf(SP.ecoregion.atRisk)}</div><div style="font-size:9.5px;color:#cfe3c2;margin-top:4px;line-height:1.3;white-space:nowrap;">at risk</div></div>
+            <div style="flex:1;"><div style="font-family:var(--serif);font-size:26px;font-weight:700;color:var(--yellow);line-height:1;">${nf(SP.ecoregion.atRiskNeedProtection)}</div><div style="font-size:9.5px;color:#cfe3c2;margin-top:4px;line-height:1.3;white-space:nowrap;">need more protection</div></div>
+          </div>
+        </div>
+      </div>`;
+}
+function speciesProjCards(SP){
+  if(!SP) return '';
+  return `<div style="display:flex;gap:12px;margin-top:12px;">
+        <div style="flex:1;background:#F1F5EC;border-radius:9px;padding:12px 15px;">
+          <div style="font-family:var(--serif);font-size:13px;font-weight:700;color:var(--deep-green);margin-bottom:10px;">All species</div>
+          <div style="display:flex;gap:14px;">
+            <div style="flex:1;"><div style="font-family:var(--serif);font-size:26px;font-weight:700;color:var(--vibrant-green);line-height:1;">${nf(SP.project.total)}<span style="font-size:15px;color:var(--gray);">/${nf(SP.ecoregion.total)}</span></div><div style="font-size:9.5px;color:var(--gray);margin-top:4px;line-height:1.3;white-space:nowrap;">total species</div></div>
+            <div style="flex:1;"><div style="font-family:var(--serif);font-size:26px;font-weight:700;color:var(--vibrant-green);line-height:1;">${nf(SP.project.needProtection)}<span style="font-size:15px;color:var(--gray);">/${nf(SP.ecoregion.needProtection)}</span></div><div style="font-size:9.5px;color:var(--gray);margin-top:4px;line-height:1.3;white-space:nowrap;">need more protection</div></div>
+          </div>
+        </div>
+        <div style="flex:1;background:#F3EFFB;border-radius:9px;padding:12px 15px;">
+          <div style="font-family:var(--serif);font-size:13px;font-weight:700;color:#5b3fb8;margin-bottom:10px;">Species at risk</div>
+          <div style="display:flex;gap:14px;">
+            <div style="flex:1;"><div style="font-family:var(--serif);font-size:26px;font-weight:700;color:var(--purple);line-height:1;">${nf(SP.project.atRisk)}<span style="font-size:15px;color:var(--gray);">/${nf(SP.ecoregion.atRisk)}</span></div><div style="font-size:9.5px;color:var(--gray);margin-top:4px;line-height:1.3;white-space:nowrap;">at risk</div></div>
+            <div style="flex:1;"><div style="font-family:var(--serif);font-size:26px;font-weight:700;color:var(--purple);line-height:1;">${nf(SP.project.atRiskNeedProtection)}<span style="font-size:15px;color:var(--gray);">/${nf(SP.ecoregion.atRiskNeedProtection)}</span></div><div style="font-size:9.5px;color:var(--gray);margin-top:4px;line-height:1.3;white-space:nowrap;">need more protection</div></div>
+          </div>
+        </div>
+      </div>`;
+}
+
+function render(D){
+  const E = D.ecoregionData, P = D.projectData;
+
+  const left = `
+    <div class="panel-left">
+      <div class="hdr-band"><img class="logo" src="${esc(D.logoUrl)}" alt="Nature Conservancy of Canada" onerror="this.style.display='none'"></div>
+      <div class="band-head">
+        <div class="eyebrow">Landscape resiliency assessment</div>
+        <h1>${esc(D.assessmentTitle)}</h1>
+      </div>
+      <div class="stats-band"><div class="kpi-row">${statTilesLite(E.stats)}</div>${speciesEcoCards(D.species)}</div>
+      <div class="intact-band"><div class="donut-wrap" style="border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:14px 18px;align-items:center;">
+        ${donut('var(--light-green)','rgba(255,255,255,.18)',E.intactPct,'#fff','var(--deep-green)','#b7e08a')}
+        <div class="legend">
+          <div class="h">Landscape intactness</div>
+          <div class="li"><span class="sw" style="background:var(--light-green)"></span> Intact <strong>${fx(E.intactPct)}%</strong></div>
+          <div class="li"><span class="sw" style="background:rgba(255,255,255,.35)"></span> Modified <strong>${fx(E.modifiedPct)}%</strong></div>
+        </div>
+      </div></div>
+      <div style="flex:1;">
+        <div class="press-title">Pressures — % of landscape</div>
+        <div class="press-list">
+          ${pressureRows(E.pressures,{barColor:'var(--light-green)',track:'rgba(255,255,255,.14)',dark:true,valueHtml:p=>`${fx(p.pct)}%`})}
+        </div>
+      </div>
+    </div>`;
+
+  const right = `
+    <div class="panel-right">
+      <div class="hdr-band"><div class="doc-head">
+        <div>
+          <div class="doc-title">Conservation Profile</div>
+          <div class="meta">
+            <span><span class="k">Ecoregion&nbsp;</span><strong>${esc(D.ecoregion)}</strong></span>
+            <span><span class="k">Ecozone&nbsp;</span><strong>${esc(D.ecozone)}</strong></span>
+          </div>
+        </div>
+        <div class="proj-tag"><div class="k">Project</div><div class="v">${esc(D.projectName)}</div></div>
+      </div></div>
+      <div class="band-head">
+        <div class="eyebrow">The project</div>
+        <h2>What ${esc(D.projectName)} offers</h2>
+      </div>
+      <div class="stats-band"><div class="tile-grid">${statTiles(P.stats)}</div>${speciesProjCards(D.species)}</div>
+      <div class="intact-band"><div class="intact-card">
+        ${donut('var(--vibrant-green)','#d3d6cd',P.intactPct,'var(--vibrant-green)','#fff','var(--gray)')}
+        <div class="legend">
+          <div class="h">Project intactness</div>
+          <div class="li"><span class="sw" style="background:var(--vibrant-green)"></span> Intact <strong>${fx(P.intactPct)}%</strong> <span style="color:var(--gray)">${nf(P.intactHa)} ha</span></div>
+          <div class="li"><span class="sw" style="background:#d3d6cd"></span> Modified <strong>${fx(P.modifiedPct)}%</strong> <span style="color:var(--gray)">${nf(P.modifiedHa)} ha</span></div>
+        </div>
+      </div></div>
+      <div style="flex:1;">
+        <div class="press-title">Project pressures — ha &amp; % of project</div>
+        <div class="press-list">
+          ${pressureRows(P.pressures,{barColor:'var(--vibrant-green)',track:'#eceae2',dark:false,valueHtml:p=>`<strong style="color:var(--ink)">${nf(p.ha)} ha</strong> · ${fx(p.pct)}%`})}
+        </div>
+      </div>
+      <div class="foot">Nature Conservancy of Canada &nbsp;·&nbsp; Profile generated ${esc(GEN_DATE)}</div>
+    </div>`;
+
+  document.getElementById('page').innerHTML = left + right;
+  document.title = `Conservation Profile — ${D.projectName}`;
+  fitValues(document.getElementById('page'));
+}
+
+render(REPORT_DATA);
+
+/* ===== Habitat page (page 2) ===== */
+function habRow(o){
+  return `<div style="background:#F4F6F1;border:1px solid var(--line);border-radius:8px;padding:8px 13px;margin-bottom:7px;">
+    <div style="font-family:var(--serif);font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:6px;">${esc(o.name)}</div>
+    <div style="display:flex;gap:12px;">
+      <div style="flex:1;"><div style="font-family:var(--serif);font-size:18px;font-weight:700;color:var(--vibrant-green);line-height:1;">${o.value}</div><div style="font-size:9px;color:var(--gray);margin-top:4px;">${o.label}</div></div>
+      ${o.pct ? `<div style="flex:1;"><div style="font-family:var(--serif);font-size:18px;font-weight:700;color:var(--deep-green);line-height:1;">${o.pct}</div><div style="font-size:9px;color:var(--gray);margin-top:4px;">of project</div></div>` : ''}
+    </div>
+  </div>`;
+}
+
+function habRowEco(o){
+  return `<div style="background:rgba(255,255,255,.09);border-radius:8px;padding:8px 13px;margin-bottom:7px;">
+    <div style="font-family:var(--serif);font-size:12.5px;font-weight:700;color:#fff;margin-bottom:6px;">${esc(o.name)}</div>
+    <div style="display:flex;gap:12px;">
+      <div style="flex:1;"><div style="font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;line-height:1;">${o.coverValue}</div><div style="font-size:9px;color:#cfe3c2;margin-top:4px;">${o.coverLabel}</div></div>
+      <div style="flex:1;"><div style="font-family:var(--serif);font-size:18px;font-weight:700;color:var(--light-green);line-height:1;">${fx(o.protectedPct)}%</div><div style="font-size:9px;color:#cfe3c2;margin-top:4px;">protected</div></div>
+      <div style="flex:1;"><div style="font-family:var(--serif);font-size:18px;font-weight:700;color:var(--yellow);line-height:1;">${fx(o.wtwPct)}%</div><div style="font-size:9px;color:#cfe3c2;margin-top:4px;">in WtW</div></div>
+    </div>
+  </div>`;
+}
+
+function renderHabitat(D){
+  const H = D.habitat;
+  if(!H){ document.getElementById('page2').style.display='none'; return; }
+  const A = (H.area || []).slice().sort((a,b)=>b.coverPct - a.coverPct);
+  const L = (H.linear || []).slice().sort((a,b)=>b.ecoregionKm - a.ecoregionKm);
+  const maxCover = Math.max(1, ...A.map(h=>h.coverPct));
+  const maxEkm   = Math.max(1, ...L.map(h=>h.ecoregionKm));
+  const maxHa    = Math.max(1, ...A.map(h=>h.projectHa));
+  const maxPkm   = Math.max(1, ...L.map(h=>h.projectKm));
+  const areaH = A.length * 72;   // shared block heights so linear groups line up L↔R
+  const linH  = L.length * 72;
+  const P0 = D.projectData;
+  const totalPkm = L.reduce((s,h)=>s+h.projectKm,0);
+  const totalPha = A.reduce((s,h)=>s+h.projectHa,0);
+
+  const left = `
+    <div class="panel-left">
+      <div class="hdr-band"><img class="logo" src="${esc(D.logoUrl)}" alt="Nature Conservancy of Canada" onerror="this.style.display='none'"></div>
+      <div class="band-head"><div class="eyebrow">Landscape resiliency assessment</div></div>
+      <div>
+        <div class="press-title">Area habitats</div>
+        <div style="min-height:${areaH}px;">${A.map(h=>habRowEco({name:h.name, coverValue:`${fx(h.coverPct)}%`, coverLabel:'of landscape', protectedPct:h.protectedPct, wtwPct:h.wtwPct})).join('')}</div>
+        <div class="press-title" style="margin-top:14px;">Linear habitats</div>
+        <div style="min-height:${linH}px;">${L.map(h=>habRowEco({name:h.name, coverValue:`${nf(Math.round(h.ecoregionKm))} km`, coverLabel:'in landscape', protectedPct:h.protectedPct, wtwPct:h.wtwPct})).join('')}</div>
+      </div>
+    </div>`;
+
+  const right = `
+    <div class="panel-right">
+      <div class="hdr-band"><div class="doc-head">
+        <div>
+          <div class="doc-title">Conservation Profile</div>
+          <div class="meta">
+            <span><span class="k">Ecoregion&nbsp;</span><strong>${esc(D.ecoregion)}</strong></span>
+            <span><span class="k">Ecozone&nbsp;</span><strong>${esc(D.ecozone)}</strong></span>
+          </div>
+        </div>
+        <div class="proj-tag"><div class="k">Project</div><div class="v">${esc(D.projectName)}</div></div>
+      </div></div>
+      <div class="band-head"><div class="eyebrow">The project</div></div>
+      <div>
+        <div class="press-title" style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;"><span>Area (ha)</span><span style="font-size:11px;font-style:italic;font-weight:400;color:var(--gray);letter-spacing:0;text-transform:none;">*habitats overlap so total % may exceed 100</span></div>
+        <div style="min-height:${areaH}px;">${A.map(h=>habRow({name:h.name, value:`${nf(Math.round(h.projectHa))} ha`, label:'in project', pct:`${fx(h.projectHa/(totalPha||1)*100)}%`})).join('')}</div>
+        <div class="press-title" style="margin-top:14px;">Length (km)</div>
+        <div style="min-height:${linH}px;">${L.map(h=>habRow({name:h.name, value:`${fx(h.projectKm)} km`, label:'in project'})).join('')}</div>
+      </div>
+      <div class="foot">Nature Conservancy of Canada &nbsp;·&nbsp; Profile generated ${esc(GEN_DATE)}</div>
+    </div>`;
+
+  document.getElementById('page2').innerHTML = left + right;
+  document.querySelectorAll('#page2 .panel-left, #page2 .panel-right').forEach(el=>{el.style.gap='12px';});
+  if(D.prototype){ document.querySelectorAll('.page').forEach(pg=>{ if(!pg.querySelector('.wm-ribbon')){ const r=document.createElement('div'); r.className='wm-ribbon'; r.textContent='PROTOTYPE'; pg.appendChild(r); } }); }
+}
+renderHabitat(REPORT_DATA);
+
+/* ===== Other metrics page (page 3) ===== */
+function renderOther(D){
+  const O = D.other;
+  if(!O || !O.length){ document.getElementById('page3').style.display='none'; return; }
+
+  const left = `
+    <div class="panel-left">
+      <div class="hdr-band"><img class="logo" src="${esc(D.logoUrl)}" alt="Nature Conservancy of Canada" onerror="this.style.display='none'"></div>
+      <div class="band-head"><div class="eyebrow">Landscape resiliency assessment</div></div>
+    </div>`;
+
+  const right = `
+    <div class="panel-right">
+      <div class="hdr-band"><div class="doc-head">
+        <div>
+          <div class="doc-title">Conservation Profile</div>
+          <div class="meta">
+            <span><span class="k">Ecoregion&nbsp;</span><strong>${esc(D.ecoregion)}</strong></span>
+            <span><span class="k">Ecozone&nbsp;</span><strong>${esc(D.ecozone)}</strong></span>
+          </div>
+        </div>
+        <div class="proj-tag"><div class="k">Project</div><div class="v">${esc(D.projectName)}</div></div>
+      </div></div>
+      <div class="band-head">
+        <div class="eyebrow">The project</div>
+        <h2>Additional metrics</h2>
+      </div>
+      <div class="tile-grid">
+        ${O.map(o=>`
+          <div class="tile" style="flex:1 1 calc(33% - 10px);min-width:0;">
+            <div class="lbl">${esc(o.name)}</div>
+            <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;">
+              <div>
+                <div class="val fit" style="color:var(--deep-green);white-space:nowrap;">${nf(o.value)}<span class="unit"> ${esc(o.unit)}</span></div>
+                <div style="font-size:9px;color:var(--gray);margin-top:3px;">in project</div>
+              </div>
+              ${Number.isFinite(o.projectPct) ? `<div>
+                <div style="font-family:var(--serif);font-size:22px;font-weight:600;color:var(--vibrant-green);line-height:1.1;">${fx(o.projectPct)}%</div>
+                <div style="font-size:9px;color:var(--gray);margin-top:3px;">of project</div>
+              </div>` : ''}
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="foot">Nature Conservancy of Canada &nbsp;·&nbsp; Profile generated ${esc(GEN_DATE)}</div>
+    </div>`;
+
+  document.getElementById('page3').innerHTML = left + right;
+  fitValues(document.getElementById('page3'));
+  if(D.prototype){ document.querySelectorAll('.page').forEach(pg=>{ if(!pg.querySelector('.wm-ribbon')){ const r=document.createElement('div'); r.className='wm-ribbon'; r.textContent='PROTOTYPE'; pg.appendChild(r); } }); }
+}
+renderOther(REPORT_DATA);
+</script>
+</body>
+</html>

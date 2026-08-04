@@ -1,0 +1,6 @@
+# Path to the ArcGIS Pro Python environment with a licensed arcpy install --
+# used via reticulate for vector intersections (R/fct_intersect_vector_value.py).
+# This is a per-machine setting, not a per-project one -- update it once to
+# match wherever ArcGIS Pro is installed on this machine. See README.md.
+
+python_path = "C:/Program Files/ArcGIS/Pro/bin/Python/envs/arcgispro-py3/python.exe"
