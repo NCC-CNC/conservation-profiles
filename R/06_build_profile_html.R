@@ -157,6 +157,15 @@ build_profile_html_pdf <- function(cp_tabs, output_path,
   on.exit(unlink(tmp_html), add = TRUE)
   writeLines(html_text, tmp_html, useBytes = TRUE)
 
-  # Landscape Letter is declared in @media print inside the template
-  pagedown::chrome_print(tmp_html, output = normalizePath(output_path, mustWork = FALSE), wait = 5)
+  # Landscape Letter is declared in @media print inside the template.
+  # --no-sandbox: Chrome/Edge's sandbox needs OS-level process isolation that's
+  # often blocked under a restricted server/service account, which otherwise
+  # crashes the render process mid-print (surfaces as a WebSocket connection
+  # reset, not a clean error).
+  pagedown::chrome_print(
+    tmp_html,
+    output = normalizePath(output_path, mustWork = FALSE),
+    wait = 5,
+    extra_args = c("--disable-gpu", "--no-sandbox")
+  )
 }
