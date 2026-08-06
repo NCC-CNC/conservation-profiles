@@ -1,6 +1,6 @@
 build_profile_html_pdf <- function(cp_tabs, output_path,
-                                    template_path = "conservation_profile_template.html",
-                                    logo_url = "NCC_Wordmark_E_Logo_KO.png",
+                                    template_path = file.path(CODE_DIR, "conservation_profile_template.html"),
+                                    logo_url = "NCC_Wordmark_E_Logo_KO.png", # resolved by the browser relative to the temp HTML's location (dirname(template_path)), not R's cwd -- keep relative
                                     prototype = FALSE) {
 
   hdr       <- cp_tabs$header

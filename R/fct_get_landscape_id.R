@@ -1,5 +1,5 @@
 # Get intersecting ecoregion
-source("R/fct_read_feature.R")
+source(file.path(CODE_DIR, "R/fct_read_feature.R"))
 
 get_landscape_id <- function(project_path, landscape_path, identifier_col) {
 

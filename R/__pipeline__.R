@@ -2,11 +2,16 @@
 
 # Start timer
 start_time <- Sys.time()
-terra::gdalCache(size = 8000) # Set GDAL cache size to 8GB
+
+# CODE_DIR is set by run.R when this codebase is shared across projects (see
+# run_template.R); every source()/file path below is built from it explicitly
+# rather than relying on the working directory. Falls back to "." (the
+# current directory) for a direct, local run.
+if (!exists("CODE_DIR")) CODE_DIR <- "."
 
 # 01 Set up
-source("R/01_setup.R")
-source("R/fct_landscape_setup.R")
+source(file.path(CODE_DIR, "R/01_setup.R"))
+source(file.path(CODE_DIR, "R/fct_landscape_setup.R"))
 print("01 Setup ...")
 # toml_path is set by run.R when this codebase is shared across projects
 # (see run_template.R); falls back to a local setup.toml otherwise.
@@ -32,14 +37,14 @@ ecoregion         <- landscape$ecoregion
 ecozone           <- landscape$ecozone
 
 # 02 vector extractions
-source("R/02_extract_vector_data.R")
+source(file.path(CODE_DIR, "R/02_extract_vector_data.R"))
 print("02 Vector ...")
 vector_names <- c("Project", names(input$data$habitat_vector)) # add project to get project area
 vector_paths <- c(project_path, as.vector(unlist(input$data$habitat_vector)))
 extracted_df <- vector_intersect(vector_names, vector_paths, project_path)
 
 # 03 raster extractions
-source("R/03_extract_raster_data.R")
+source(file.path(CODE_DIR, "R/03_extract_raster_data.R"))
 print("03 Raster ...")
 raster_data <- c(input$data$habitat_raster, input$data$pressures_raster, input$data$prioritization_raster)
 raster_names <- names(raster_data)
@@ -60,7 +65,7 @@ other_raster_df$Unit <- "tonnes"
 other_df <- rbind(other_vector_df, other_raster_df)
 
 # 04 species extractions using 1km grid data
-source("R/04_build_species_tab.R")
+source(file.path(CODE_DIR, "R/04_build_species_tab.R"))
 print("04 Species ...")
 species_dir <- input$data$paths$species_dir
 species_df <- if (is_custom) {
@@ -72,12 +77,12 @@ species_df <- if (is_custom) {
 species_summary_df <- summarise_species_tab(species_df)
 
 # 05 build conservation profile table
-source("R/05_build_profile_excel.R")
+source(file.path(CODE_DIR, "R/05_build_profile_excel.R"))
 print("05 Excel ...")
 cp_tabs <- build_profile_tab(extracted_df, erap_path, "ECOREGION", ecoregion, species_df, species_summary_df, other_df = other_df, geoms = geoms, cfg = input$data)
 
 # 06 build conservation profile pdf
-source("R/06_build_profile_html.R")
+source(file.path(CODE_DIR, "R/06_build_profile_html.R"))
 print("06 PDF...")
 build_profile_html_pdf(
   cp_tabs,

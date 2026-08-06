@@ -1,4 +1,4 @@
-source("R/fct_read_feature.R")
+source(file.path(CODE_DIR, "R/fct_read_feature.R"))
 
 # Intersects a with b and dissolves to a single feature. Returns a zero-row sf
 # object (same CRS as b) instead of erroring when there's no overlap, so

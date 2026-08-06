@@ -1,8 +1,8 @@
-source("R/fct_read_feature.R")
-source("R/fct_get_landscape_id.R")
-source("R/fct_excel_styles.R")
-source("R/fct_custom_landscape_geoms.R")
-source("R/fct_build_custom_erap_row.R")
+source(file.path(CODE_DIR, "R/fct_read_feature.R"))
+source(file.path(CODE_DIR, "R/fct_get_landscape_id.R"))
+source(file.path(CODE_DIR, "R/fct_excel_styles.R"))
+source(file.path(CODE_DIR, "R/fct_custom_landscape_geoms.R"))
+source(file.path(CODE_DIR, "R/fct_build_custom_erap_row.R"))
 
 erap_header_cols <- c(
   "ecoregion_inland_km2",
@@ -225,7 +225,7 @@ build_profile_tab <- function(project_data, erap_path, identifier_col, landscape
       dplyr::mutate(`% of project` = `Project total (ha)` / header_df$Project_area_ha *100),
         by = "name"
       ) |>
-    dplyr::mutate(name = dplyr::replace_values(
+    dplyr::mutate(name = dplyr::case_match(
       name,
       "forestry_pcnt" ~ "Forestry footprint",
       "agriculture_pcnt" ~ "Agriculture footprint",
@@ -255,7 +255,7 @@ build_profile_tab <- function(project_data, erap_path, identifier_col, landscape
       dplyr::mutate("% of project" = round(`Project total (ha)` / sum(`Project total (ha)`, na.rm = TRUE) *100, 1)),
         by = "name"
       ) |>
-    dplyr::mutate(name = dplyr::replace_values(
+    dplyr::mutate(name = dplyr::case_match(
       name,
       "intact" ~ "Intact",
       "modified" ~ "Modified")) |>

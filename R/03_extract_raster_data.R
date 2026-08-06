@@ -1,8 +1,8 @@
 # Compute the area (ha) of "1" cells in a binary raster that fall inside a boundary polygon.
 # Raster must be coded 1/0 or 1/NoData for the sum to give a meaningful area.
 
-source("R/fct_read_feature.R")
-source("R/fct_read_raster.R")
+source(file.path(CODE_DIR, "R/fct_read_feature.R"))
+source(file.path(CODE_DIR, "R/fct_read_raster.R"))
 
 intersect_raster_value <- function(rast_path, boundary_sf) {
   r <- read_raster(rast_path)

@@ -1,5 +1,5 @@
-source("R/fct_read_feature.R")
-source("R/03_extract_raster_data.R")
+source(file.path(CODE_DIR, "R/fct_read_feature.R"))
+source(file.path(CODE_DIR, "R/03_extract_raster_data.R"))
 
 # Builds a one-row ERAP-equivalent data.frame for a user-supplied custom
 # landscape, by intersecting it against the same habitat/pressure/WTW/

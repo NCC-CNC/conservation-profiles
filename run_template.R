@@ -6,4 +6,4 @@
 CODE_DIR <- "C:/GIS/conservation-profiles"
 
 toml_path <- file.path(getwd(), "setup.toml")
-source(file.path(CODE_DIR, "__pipeline__.R"), chdir = TRUE)
+source(file.path(CODE_DIR, "R/__pipeline__.R"))

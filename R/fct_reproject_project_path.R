@@ -1,4 +1,4 @@
-source("R/fct_read_feature.R")
+source(file.path(CODE_DIR, "R/fct_read_feature.R"))
 
 # Reprojects a single vector path to ref_crs if it doesn't already match,
 # writing a scratch shapefile next to the source layer and warning the user.

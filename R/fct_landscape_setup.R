@@ -1,6 +1,6 @@
-source("R/fct_get_landscape_id.R")
-source("R/fct_ecozone_lookup.R")
-source("R/fct_custom_landscape_geoms.R")
+source(file.path(CODE_DIR, "R/fct_get_landscape_id.R"))
+source(file.path(CODE_DIR, "R/fct_ecozone_lookup.R"))
+source(file.path(CODE_DIR, "R/fct_custom_landscape_geoms.R"))
 
 # Resolves what "landscape" the ERAP row/species table get compared against:
 # a custom user-supplied landscape (setup.toml's [custom_landscape] section)

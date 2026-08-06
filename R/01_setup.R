@@ -10,9 +10,9 @@
 #'
 #' -----------------------------------------------------------------------------
 
-source("R/fct_get_landscape_id.R")
-source("R/fct_ecozone_lookup.R")
-source("R/fct_reproject_project_path.R")
+source(file.path(CODE_DIR, "R/fct_get_landscape_id.R"))
+source(file.path(CODE_DIR, "R/fct_ecozone_lookup.R"))
+source(file.path(CODE_DIR, "R/fct_reproject_project_path.R"))
 
 setup <- function(toml_path = "setup.toml") {
   required_pkgs <- c(
@@ -39,6 +39,8 @@ setup <- function(toml_path = "setup.toml") {
       install.packages(pkg, repos = "https://cloud.r-project.org")
     }
   }
+
+  terra::gdalCache(size = 8000) # Set GDAL cache size to 8GB -- after install, terra may not exist yet on a fresh system
 
   # Read-in toml and return configs
   cfg <- RcppTOML::parseTOML(toml_path)

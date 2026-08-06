@@ -1,6 +1,6 @@
-arcgis_cfg <- RcppTOML::parseTOML("arcgis_config.toml")
+arcgis_cfg <- RcppTOML::parseTOML(file.path(CODE_DIR, "arcgis_config.toml"))
 reticulate::use_python(arcgis_cfg$python_path)
-reticulate::source_python("R/fct_intersect_vector_value.py")
+reticulate::source_python(file.path(CODE_DIR, "R/fct_intersect_vector_value.py"))
 
 vector_intersect <- function(vector_names, vector_paths, project_path){
   
