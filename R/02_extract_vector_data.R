@@ -1,6 +1,7 @@
 arcgis_cfg <- RcppTOML::parseTOML(file.path(CODE_DIR, "arcgis_config.toml"))
 reticulate::use_python(arcgis_cfg$python_path)
 reticulate::source_python(file.path(CODE_DIR, "R/fct_intersect_vector_value.py"))
+set_output_projection(input$data$habitat_raster$habitat_forest)
 
 vector_intersect <- function(vector_names, vector_paths, project_path){
   

@@ -3,8 +3,15 @@ import arcpy
 #import tomllib
 import sys
 
-arcpy.env.outputCoordinateSystem = arcpy.Describe("C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/habitat.gdb/waterbody_2_proj_diss").spatialReference
 arcpy.env.overwriteOutput = True
+
+# Sets arcpy's output coordinate system to match a reference dataset, so
+# vector intersect outputs land in the same projection as the rest of the
+# pipeline. Called once from R (02_extract_vector_data.R) right after this
+# file is sourced, passing habitat_forest's path from setup.toml -- this
+# used to be a hardcoded reference path instead of a config-driven one.
+def set_output_projection(reference_path):
+    arcpy.env.outputCoordinateSystem = arcpy.Describe(reference_path).spatialReference
 
 # Compute the area or length of an input feature class within a boundary
 # polygon, or within the overlap of several boundaries at once (pass a list,
