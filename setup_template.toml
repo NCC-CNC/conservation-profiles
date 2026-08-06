@@ -1,7 +1,7 @@
 [project]
-project_name = ""
-project_dir = ""
-project_path = ""
+project_name = "Darkwoods"
+project_dir = "Z:/CPP/Conservation_Profiles/example_project_folder"
+project_path = "Z:/CPP/Conservation_Profiles/example_project_folder/gisdata/Darkwoods.shp"
 
 [custom_landscape]
 # Optional. Leave landscape_path blank to use the standard ecoregion lookup.
@@ -17,41 +17,41 @@ landscape_path = ""
 ######################################################################################################################################################################
 
 [paths]
-species_dir = "C:/Data/PRZ/NAT_DATA/NAT_DATA_20250801/me_tifs"
-erap_path = "C:/Users/marc.edwards/Documents/PROJECTS/ERAPs_v1/output/ERAP_ecoregions.gdb/ERAP_ecoregions"
-erap_species_dir = "C:/Users/marc.edwards/Documents/PROJECTS/ERAPs_v1/processing/species/output_csv"
+species_dir = "Z:/CPP/Conservation_Profiles/ncc_data/me_tifs"
+  erap_path = "Z:/CPP/Conservation_Profiles/ncc_data/ncc_data.gdb/ERAP_ecoregions"
+erap_species_dir = "Z:/CPP/Conservation_Profiles/ncc_data/species_output_csv"
 
 [habitat_raster]
-habitat_forest = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/Forest_LC_30m_2022.tif"
+habitat_forest = "Z:/CPP/Conservation_Profiles/ncc_data/Forest_LC_30m_2022.tif"
 
 [pressures_raster]
-pressure_intact = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30_intact.tif"
-pressure_modified = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_2022_r90_merged_prj_30_modified.tif"
-pressure_forestry = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_fr2022_r90_merged_prj_30_binary.tif"
-pressure_energy = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_en2022_r90_merged_prj_30_binary.tif"
-pressure_builtup = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_bu2022_r90_merged_prj_30_binary.tif"
-pressure_agriculture = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_ag2022_r90_merged_prj_30_binary.tif"
-pressure_transport_high = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_tr2022_r90_merged_prj_30_binary_high.tif"
-pressure_transport_low = "C:/Users/marc.edwards/Documents/gisdata/Canada_human_modification/HM_Aug21_2024_projected_30m/HM_CA_tr2022_r90_merged_prj_30_binary_low.tif"
+pressure_intact = "Z:/CPP/Conservation_Profiles/ncc_data/HM_CA_2022_r90_merged_prj_30_intact.tif"
+pressure_modified = "Z:/CPP/Conservation_Profiles/ncc_data/HM_CA_2022_r90_merged_prj_30_modified.tif"
+pressure_forestry = "Z:/CPP/Conservation_Profiles/ncc_data/HM_CA_fr2022_r90_merged_prj_30_binary.tif"
+pressure_energy = "Z:/CPP/Conservation_Profiles/ncc_data/HM_CA_en2022_r90_merged_prj_30_binary.tif"
+pressure_builtup = "Z:/CPP/Conservation_Profiles/ncc_data/HM_CA_bu2022_r90_merged_prj_30_binary.tif"
+pressure_agriculture = "Z:/CPP/Conservation_Profiles/ncc_data/HM_CA_ag2022_r90_merged_prj_30_binary.tif"
+pressure_transport_high = "Z:/CPP/Conservation_Profiles/ncc_data/HM_CA_tr2022_r90_merged_prj_30_binary_high.tif"
+pressure_transport_low = "Z:/CPP/Conservation_Profiles/ncc_data/HM_CA_tr2022_r90_merged_prj_30_binary_low.tif"
 
 [habitat_vector]
-habitat_grassland = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/habitat.gdb/AAFC_LUTS_2020"
-habitat_wetland = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/habitat.gdb/canvec_saturated_soil_2_merge_20230201_pw_dissolve"
-habitat_lakes = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/habitat.gdb/waterbody_2_proj_diss"
-habitat_rivers = "C:/Users/marc.edwards/Documents/gisdata/hydrology/NHN/master_rivers.gdb/master_rivers"
-habitat_shoreline = "C:/Users/marc.edwards/Documents/gisdata/habitat_metrics_Jul24_2024/habitat.gdb/shoreline_merge"
+habitat_grassland = "Z:/CPP/Conservation_Profiles/ncc_data/ncc_data.gdb/AAFC_LUTS_2020"
+habitat_wetland = "Z:/CPP/Conservation_Profiles/ncc_data/ncc_data.gdb/canvec_saturated_soil_2_merge_20230201_pw_dissolve"
+habitat_lakes = "Z:/CPP/Conservation_Profiles/ncc_data/ncc_data.gdb/waterbody_2_proj_diss"
+habitat_rivers = "Z:/CPP/Conservation_Profiles/ncc_data/ncc_data.gdb/master_rivers"
+habitat_shoreline = "Z:/CPP/Conservation_Profiles/ncc_data/ncc_data.gdb/shoreline_merge"
 
 [prioritization_raster]
-prioritization_wtw = "C:/Users/marc.edwards/Documents/PROJECTS/ERAPs_v1/processing/prioritizr/ecozones/Canada_wtw_2024_noIncludes.tif"
+prioritization_wtw = "Z:/CPP/Conservation_Profiles/ncc_data/Canada_wtw_2024_noIncludes.tif"
 
 [other_raster]
-carbon_storage = "C:/Users/marc.edwards/Documents/gisdata/carbon/carbon.gdb/total_abovebelow_c_aligned_crop_resample100m"
+carbon_storage = "Z:/CPP/Conservation_Profiles/ncc_data/ncc_data.gdb/total_abovebelow_c_aligned_crop_resample100m"
 
 [other_vector]
-peatlands = "C:/Users/marc.edwards/Documents/gisdata/Peatlands/Peatlands.gdb/Merge_Peatland_Pontone_NRCAN"
+peatlands = "Z:/CPP/Conservation_Profiles/ncc_data/ncc_data.gdb/Merge_Peatland_Pontone_NRCAN"
 
 [custom_landscape_data]
-protected_vector_path = "C:/Users/marc.edwards/Documents/gisdata/protected_areas_2024/ProtectedConservedArea.gdb/cpcad_ncc_dslv_july2024"
-wtw_vector_path = "C:/Users/marc.edwards/Documents/PROJECTS/ERAPs_v1/processing/prioritizr/ecozones/Canada_wtw_2024_noIncludes.shp"
-protected_grid_path = "C:/Users/marc.edwards/Documents/gisdata/protected_areas_2024/Dans_updated_WTW_Includes_July_2024/Existing_Conservation.tif"
-species_metadata_path = "C:/Data/PRZ/NAT_DATA/WTW_NAT_DATA_20240522/WTW_NAT_SPECIES_METADATA.xlsx"
+protected_vector_path = "Z:/CPP/Conservation_Profiles/ncc_data/ncc_data.gdb/cpcad_ncc_dslv_july2024"
+wtw_vector_path = "Z:/CPP/Conservation_Profiles/ncc_data/Canada_wtw_2024_noIncludes.shp"
+protected_grid_path = "Z:/CPP/Conservation_Profiles/ncc_data/Existing_Conservation.tif"
+species_metadata_path = "Z:/CPP/Conservation_Profiles/ncc_data/WTW_NAT_SPECIES_METADATA.xlsx"
