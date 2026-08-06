@@ -26,15 +26,15 @@ This codebase lives in **one shared, git-synced location** (`CODE_DIR`) rather t
 **Per project:**
 1. Create a new folder for the project (anywhere — it does not need to be inside `CODE_DIR`).
 2. Copy `run_template.R` from the repo root into that folder and rename it `run.R`.
-3. Open `run.R` (right click the file and 'open with' RStudio or Positron) and confirm `CODE_DIR` points at the shared checkout from step 1 (this should already match — it's the same for every project on a given machine, so it normally needs no edits).
+3. Open `run.R` (right click the file and 'open with' RStudio or Positron) and confirm `CODE_DIR` points at the shared checkout from step 1 (this should already match — it's the same for every project on a given machine, so it normally needs no edits). Then set `toml_path` to this project's own `setup.toml` full file path — this must be set manually for every project; it is not derived automatically.
 4. Copy `setup_template.toml` from the repo root into that folder, rename it `setup.toml`, open in RStudio or Positron and update the `[project]` fields (and `[custom_landscape]`, if using one) with this project's paths — see below.
-5. Run `run.R` in RStudio or Positron. It sources `__pipeline__.R` from `CODE_DIR` and `setup.toml` from your project folder.
+5. Run `run.R` in RStudio or Positron. It sources `__pipeline__.R` from `CODE_DIR` and `setup.toml` from the path you set in step 3.
 
 Outputs (`<project_name>_conservation_profile.xlsx`/`.pdf`) are written to `project_dir` as set in `setup.toml` — this can be the project folder itself or anywhere else.
 
 Notes on running in GIS Data Workshop:
 - This workflow uses the arcpy library which requires an active ArcGIS license. To activate your license, open and log in to ArcGIS Pro before running the code.
-- Each run of run.R needs to have the working directory set as the project folder that run.R and setup.toml sits it. The easiest way to achieve this is to close RStudio/Positron after each run. To run a new project, open a new instance of RStudio/Positron. This will ensure the working directory is now set to the new project folder.
+- `run.R`'s `toml_path` must be updated to point at the current project's `setup.toml` every time you switch projects.
 - The first time you run this workflow, R will need to install all the packages to you GIS Data Workshop profile. This will add some processing time. The first time the codebase builds the conservation profile pdf, you may get an admin permission request popup. This can be cancelled, the pdf is still built and the popup doesn't appear for subsequent runs.
 
 
