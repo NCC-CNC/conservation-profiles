@@ -24,12 +24,15 @@ erap_path <- input$data$paths$erap_path
 # Landscape setup
 # Choose the reference landscape as one of:
 #   Default:           Ecoregion that the majority of the project falls in
-#   Force ecoregion(s):User provides ecoregion number. Multiple ecoregions can be combined.
-#                      e.g. force_ecoregion = c(69,71). If provided, takes priority over default.
-#   Custom landscape:  Any user provided landscape polygon with a path provided in 
+#   Force ecoregion(s):User sets force_ecoregion in setup.toml's [custom_landscape]
+#                      section, e.g. force_ecoregion = [69, 71] to combine several
+#                      ecoregions. If set, takes priority over default.
+#   Custom landscape:  Any user provided landscape polygon with a path provided in
 #                      setup.toml's [custom_landscape] section. If provided, takes priority
 #                      over other options.
-landscape <- landscape_setup(input, project_path, erap_path, force_ecoregion = NULL)
+force_ecoregion <- input$data$custom_landscape$force_ecoregion
+if (length(force_ecoregion) == 0) force_ecoregion <- NULL
+landscape <- landscape_setup(input, project_path, erap_path, force_ecoregion = force_ecoregion)
 custom_landscape <- landscape$custom_landscape
 is_custom         <- landscape$is_custom
 geoms             <- landscape$geoms
