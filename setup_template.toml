@@ -3,12 +3,6 @@ project_name = "Darkwoods"
 project_dir = "Z:/CPP/Conservation_Profiles/example_project_folder"
 project_path = "Z:/CPP/Conservation_Profiles/example_project_folder/gisdata/Darkwoods.shp"
 
-# Optional. Leave empty to use the default lookup (the ecoregion the majority
-# of the project falls in). If set, these ecoregion number(s) are used instead
-# -- e.g. force_ecoregion = [69, 71] to treat several ecoregions as one combined
-# landscape. Ignored when landscape_path (above) is set.
-force_ecoregion = []
-
 [custom_landscape]
 # Optional. Leave landscape_path blank to use the standard ecoregion lookup.
 # When landscape_path is set, the pipeline builds the ERAP row and species table
@@ -16,7 +10,11 @@ force_ecoregion = []
 landscape_name = ""
 landscape_path = ""
 
-
+# Optional. Leave empty to use the default lookup (the ecoregion the majority
+# of the project falls in). If set, these ecoregion number(s) are used instead
+# -- e.g. force_ecoregion = [69, 71] to treat several ecoregions as one combined
+# landscape. Ignored when landscape_path (above) is set.
+force_ecoregion = []
 
 
 

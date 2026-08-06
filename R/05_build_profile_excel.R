@@ -309,7 +309,12 @@ build_profile_tab <- function(project_data, erap_path, identifier_col, landscape
 
   source_data_df <- do.call(rbind, lapply(names(cfg), function(section) {
     keys <- setdiff(names(cfg[[section]]), "project_dir")
-    data.frame(Variable = keys, Path = unlist(cfg[[section]][keys]), stringsAsFactors = FALSE, row.names = NULL)
+    # paste/collapse each key's value to one string -- keeps one row per key
+    # even for zero-length (e.g. force_ecoregion = []) or multi-value
+    # (e.g. force_ecoregion = [69, 71]) fields, which unlist() would otherwise
+    # mangle into the wrong number of rows
+    vals <- vapply(keys, function(k) paste(cfg[[section]][[k]], collapse = ", "), character(1))
+    data.frame(Variable = keys, Path = vals, stringsAsFactors = FALSE, row.names = NULL)
   }))
   openxlsx::addWorksheet(wb, "source_data")
   openxlsx::writeData(wb, "source_data", source_data_df)
