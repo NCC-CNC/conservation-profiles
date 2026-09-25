@@ -26,8 +26,11 @@ reproject_if_needed <- function(path, ref_crs, label) {
     call. = FALSE
   )
 
-  feature_sf <- sf::st_transform(feature_sf, ref_crs)
-  sf::st_write(feature_sf, scratch_path, delete_layer = TRUE, quiet = TRUE)
+  # geometry only: shapefile field names cap at 10 chars, so long source
+  # attribute names (e.g. PCL_PROPERTY_ID) make st_write fail; downstream only
+  # uses the geometry of these boundaries anyway
+  feature_sfc <- sf::st_transform(sf::st_geometry(feature_sf), ref_crs)
+  sf::st_write(feature_sfc, scratch_path, delete_layer = TRUE, quiet = TRUE)
 
   scratch_path
 }
