@@ -1,7 +1,9 @@
 import arcpy
 #import pandas as pd
 #import tomllib
+import os
 import sys
+import uuid
 
 arcpy.env.overwriteOutput = True
 
@@ -18,6 +20,14 @@ def set_output_projection(reference_path):
 # e.g. [landscape_fc, protected_fc] to get habitat ∩ landscape ∩ protected).
 # PairwiseIntersect only accepts two inputs per call, so multiple boundaries
 # are applied as a chain of pairwise intersects rather than a single N-way one.
+#
+# Intermediates are written to arcpy's scratch file geodatabase, not the
+# "memory/" workspace: intersects/dissolves into memory/ were non-deterministic
+# (identical calls returned different areas, dropping up to ~6% of habitat in
+# chained landscape x protected/WTW intersects), with both PairwiseIntersect
+# and classic Intersect, parallel processing on or off. Writing to a file gdb
+# gave identical results on every repeat. Names carry a per-call tag since the
+# scratch gdb, unlike memory/, is shared across concurrently running processes.
 def intersect_vector_value(input_fc, boundary):
 
     # set units based on shape type
@@ -31,22 +41,29 @@ def intersect_vector_value(input_fc, boundary):
 
     boundaries = boundary if isinstance(boundary, list) else [boundary]
 
+    scratch = arcpy.env.scratchGDB
+    tag = uuid.uuid4().hex[:8]
+    dissolved = os.path.join(scratch, f"d_{tag}")
+
     current = input_fc
     intermediates = []
-    for i, b in enumerate(boundaries):
-        out = f"memory/i{i}"
-        current = arcpy.analysis.PairwiseIntersect([current, b], out)
-        intermediates.append(out)
+    try:
+        for i, b in enumerate(boundaries):
+            out = os.path.join(scratch, f"i{i}_{tag}")
+            intermediates.append(out)
+            current = arcpy.analysis.PairwiseIntersect([current, b], out)
 
-    x_d = arcpy.analysis.PairwiseDissolve(current, "memory/d")
-    x_d = arcpy.management.AddField(x_d, "calculated_value", "DOUBLE")
-    x_d = arcpy.management.CalculateField(x_d, "calculated_value", query)
+        intermediates.append(dissolved)
+        x_d = arcpy.analysis.PairwiseDissolve(current, dissolved)
+        x_d = arcpy.management.AddField(x_d, "calculated_value", "DOUBLE")
+        x_d = arcpy.management.CalculateField(x_d, "calculated_value", query)
 
-    total = 0
-    with arcpy.da.SearchCursor(x_d, ["calculated_value"]) as cursor:
-        for r in cursor:
-            total += r[0]
-    for out in intermediates:
-        arcpy.management.Delete(out)
-    arcpy.management.Delete("memory/d")
+        total = 0
+        with arcpy.da.SearchCursor(x_d, ["calculated_value"]) as cursor:
+            for r in cursor:
+                total += r[0]
+    finally:
+        for out in intermediates:
+            if arcpy.Exists(out):
+                arcpy.management.Delete(out)
     return round(total, 4)
