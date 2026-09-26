@@ -30,7 +30,7 @@ This codebase lives in **one shared, git-synced location** (`CODE_DIR`) rather t
 4. Copy `setup_template.toml` from the repo root into that folder, rename it `setup.toml`, open in RStudio or Positron and update the `[project]` fields (and `[custom_landscape]`, if using one) with this project's paths — see below.
 5. Run `run.R` in RStudio or Positron. It sources `__pipeline__.R` from `CODE_DIR` and `setup.toml` from the path you set in step 3.
 
-Outputs (`<project_name>_conservation_profile.xlsx`/`.pdf`) are written to `project_dir` as set in `setup.toml` — this can be the project folder itself or anywhere else.
+Outputs (`<project_name>_conservation_profile.xlsx`/`.pdf`, or `<project_name>_x_<landscape_name>_conservation_profile.xlsx`/`.pdf` when a custom landscape is set) are written to `project_dir` as set in `setup.toml` — this can be the project folder itself or anywhere else.
 
 Notes on running in GIS Data Workshop:
 - This workflow uses the arcpy library which requires an active ArcGIS license. To activate your license, open and log in to ArcGIS Pro before running the code.

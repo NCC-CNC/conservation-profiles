@@ -320,7 +320,7 @@ build_profile_tab <- function(project_data, erap_path, identifier_col, landscape
   openxlsx::writeData(wb, "source_data", source_data_df)
   apply_ncc_table(wb, "source_data", source_data_df)
 
-  xlsx_path <- file.path(input$data$project$project_dir, paste0(project_name, "_conservation_profile.xlsx"))
+  xlsx_path <- file.path(input$data$project$project_dir, paste0(output_name, "_conservation_profile.xlsx"))
   tryCatch(
     openxlsx::saveWorkbook(wb, xlsx_path, overwrite = TRUE),
     error = function(e) stop("Could not save Excel file (is it open?): ", xlsx_path, "\n", conditionMessage(e))

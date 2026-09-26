@@ -39,6 +39,19 @@ geoms             <- landscape$geoms
 ecoregion         <- landscape$ecoregion
 ecozone           <- landscape$ecozone
 
+# Output file stem (used for both the xlsx and pdf). With a custom landscape,
+# the landscape name is appended so the same project can be run against
+# several landscapes without each run overwriting the last. Falls back to the
+# landscape layer's name if landscape_name is blank.
+output_name <- project_name
+if (is_custom) {
+  landscape_label <- custom_landscape$landscape_name
+  if (is.null(landscape_label) || !nzchar(landscape_label))
+    landscape_label <- sub("_reprojected$", "", tools::file_path_sans_ext(basename(custom_landscape$landscape_path)))
+  output_name <- paste0(project_name, "_x_", gsub(" ", "_", landscape_label))
+}
+output_name <- gsub('[\\\\/:*?"<>|]', "", output_name) # strip characters Windows doesn't allow in filenames
+
 # 02 vector extractions
 source(file.path(CODE_DIR, "R/02_extract_vector_data.R"))
 print("02 Vector ...")
@@ -89,7 +102,7 @@ source(file.path(CODE_DIR, "R/06_build_profile_html.R"))
 print("06 PDF...")
 build_profile_html_pdf(
   cp_tabs,
-  file.path(input$data$project$project_dir, paste0(project_name, "_conservation_profile.pdf")),
+  file.path(input$data$project$project_dir, paste0(output_name, "_conservation_profile.pdf")),
   prototype = TRUE
 )
 
