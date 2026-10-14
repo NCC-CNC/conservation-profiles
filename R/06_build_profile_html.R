@@ -20,15 +20,20 @@ build_profile_html_pdf <- function(cp_tabs, output_path,
   eco_intact   <- intactness[intactness$Condition == "Intact",  ]
   eco_modified <- intactness[intactness$Condition == "Modified", ]
 
-  n_project        <- if (!is.null(species)) sum(species$Project_count,                              na.rm = TRUE) else 0
-  n_landscape      <- if (!is.null(species)) sum(species$Landscape_count,                            na.rm = TRUE) else 0
-  n_needs_prot     <- if (!is.null(species)) sum(species$National_or_landscape_protection_shortfall, na.rm = TRUE) else 0
-  n_proj_needs     <- if (!is.null(species)) sum(species$Project_reduces_shortfall,                   na.rm = TRUE) else 0
-  sar_rows         <- if (!is.null(species)) dplyr::filter(species, grepl("SAR", Source)) else NULL
-  n_sar_proj       <- if (!is.null(sar_rows)) sum(sar_rows$Project_count,                              na.rm = TRUE) else 0
-  n_sar_land       <- if (!is.null(sar_rows)) sum(sar_rows$Landscape_count,                            na.rm = TRUE) else 0
-  n_sar_needs_prot <- if (!is.null(sar_rows)) sum(sar_rows$National_or_landscape_protection_shortfall, na.rm = TRUE) else 0
-  n_sar_proj_needs <- if (!is.null(sar_rows)) sum(sar_rows$Project_reduces_shortfall,                   na.rm = TRUE) else 0
+  # species totals come from the "Total" / "SAR total" rows of the Species Summary table
+  species_count <- function(source, col) {
+    if (is.null(species)) return(0)
+    v <- species[[col]][species$Source == source]
+    if (length(v) == 0 || is.na(v[1])) 0 else v[1]
+  }
+  n_project        <- species_count("Total",     "Project_count")
+  n_landscape      <- species_count("Total",     "Landscape_count")
+  n_needs_prot     <- species_count("Total",     "National_or_landscape_protection_shortfall")
+  n_proj_needs     <- species_count("Total",     "Project_reduces_shortfall")
+  n_sar_proj       <- species_count("SAR total", "Project_count")
+  n_sar_land       <- species_count("SAR total", "Landscape_count")
+  n_sar_needs_prot <- species_count("SAR total", "National_or_landscape_protection_shortfall")
+  n_sar_proj_needs <- species_count("SAR total", "Project_reduces_shortfall")
 
   pres_sorted <- pressures[order(pressures[["% of ecoregion"]], decreasing = TRUE), ]
 
@@ -99,7 +104,7 @@ build_profile_html_pdf <- function(cp_tabs, output_path,
       stats = list(
         list(label = "Project area",          value = as.integer(round(hdr$Project_area_ha, 0)), unit = " ha", color = "deep-green",  basis = "calc(27% - 10px)"),
         list(label = "% of landscape",         value = round(hdr[["project_%_of_ecoregion"]], 2), unit = "%",   color = "light-green", basis = "calc(27% - 10px)"),
-        list(label = "Where to Work overlap", value = as.integer(round(hdr$Project_wtw, 0)),     unit = " ha", color = "blue",        basis = "calc(46% - 10px)",
+        list(label = "Where to Work overlap", value = as.integer(round(hdr[["Project_wtw_ha"]], 0)),     unit = " ha", color = "blue",        basis = "calc(46% - 10px)",
              sub = paste0(round(hdr[["%_of_project_in_WTW"]], 1), "% of project"))
       ),
       intactPct   = round(eco_intact[["% of project"]],            1),
@@ -127,14 +132,14 @@ build_profile_html_pdf <- function(cp_tabs, output_path,
       linear = hab_linear
     ),
     other = if (!is.null(cp_tabs$other)) {
-      project_ha <- cp_tabs$header$Project_area_ha
       lapply(seq_len(nrow(cp_tabs$other)), function(i) {
         row <- cp_tabs$other[i, ]
+        pct <- row[["% of project"]]
         list(
-          name       = tools::toTitleCase(gsub("_", " ", row$Dataset)),
-          value      = as.integer(round(row$Project_value, 0)),
+          name       = row$Layer,
+          value      = as.integer(round(row[["Project value"]], 0)),
           unit       = row$Unit,
-          projectPct = if (row$Unit == "ha") round(row$Project_value / project_ha * 100, 1) else NULL
+          projectPct = if (!is.na(pct)) pct else NULL
         )
       })
     } else list()

@@ -284,6 +284,22 @@ build_profile_tab <- function(project_data, erap_path, identifier_col, landscape
   openxlsx::writeData(wb, "Pressures", pressures_df, startRow = nrow(intactness_df) + 4)
   apply_ncc_table(wb, "Pressures", pressures_df, start_row = nrow(intactness_df) + 4)
 
+  # append overall and species-at-risk totals (summed across sources; SAR
+  # sources identified by "SAR" in Source) -- read by name in the PDF
+  if (!is.null(species_summary_df)) {
+    sum_counts <- function(df, label) {
+      df |>
+        dplyr::ungroup() |>
+        dplyr::summarise(dplyr::across(-Source, ~ sum(.x, na.rm = TRUE))) |>
+        dplyr::mutate(Source = label, .before = 1)
+    }
+    species_summary_df <- dplyr::bind_rows(
+      species_summary_df,
+      sum_counts(species_summary_df, "Total"),
+      sum_counts(dplyr::filter(species_summary_df, grepl("SAR", Source)), "SAR total")
+    )
+  }
+
   openxlsx::addWorksheet(wb, "Species Summary")
   openxlsx::writeData(wb, "Species Summary", species_summary_df)
   apply_ncc_table(wb, "Species Summary", species_summary_df)
@@ -292,6 +308,7 @@ build_profile_tab <- function(project_data, erap_path, identifier_col, landscape
   openxlsx::writeData(wb, "Species", species_df)
   apply_ncc_table(wb, "Species", species_df)
 
+  other_display_df <- NULL
   if (!is.null(other_df)) {
     other_display_df <- data.frame(
       Layer = tools::toTitleCase(gsub("_", " ", other_df$Dataset)),
@@ -299,9 +316,11 @@ build_profile_tab <- function(project_data, erap_path, identifier_col, landscape
       Unit = other_df$Unit,
       check.names = FALSE
     )
-    ha_rows <- other_df$Unit == "ha"
-    other_display_df$`% of project`[ha_rows] <- round(
-      other_df$Project_value[ha_rows] / header_df$Project_area_ha * 100, 1
+    # % of project only applies to area (ha) layers; NA otherwise
+    other_display_df$`% of project` <- ifelse(
+      other_df$Unit == "ha",
+      round(other_df$Project_value / header_df$Project_area_ha * 100, 1),
+      NA_real_
     )
     openxlsx::addWorksheet(wb, "Other")
     openxlsx::writeData(wb, "Other", other_display_df)
@@ -336,7 +355,7 @@ build_profile_tab <- function(project_data, erap_path, identifier_col, landscape
       pressures = pressures_df,
       species_summary = species_summary_df,
       species = species_df,
-      other = other_df
+      other = other_display_df
     )
   )
 }

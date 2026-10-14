@@ -407,7 +407,6 @@ function renderHabitat(D){
   const areaH = A.length * 72;   // shared block heights so linear groups line up L↔R
   const linH  = L.length * 72;
   const P0 = D.projectData;
-  const totalPkm = L.reduce((s,h)=>s+h.projectKm,0);
 
   const left = `
     <div class="panel-left">
