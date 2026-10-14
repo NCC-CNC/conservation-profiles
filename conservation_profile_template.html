@@ -174,10 +174,10 @@ const REPORT_DATA =
   // linear[] = habitats measured by length (km); ecoregion value is total km.
   habitat: {
     area: [
-      { name: "Forest",    coverPct: 76.42, protectedPct: 1.72, wtwPct: 23.23, projectHa: 1225.65 },
-      { name: "Grassland", coverPct: 0.13,  protectedPct: 6.76, wtwPct: 33.10, projectHa: 91.21 },
-      { name: "Wetland",   coverPct: 4.51,  protectedPct: 1.57, wtwPct: 18.03, projectHa: 28.75 },
-      { name: "Lakes",     coverPct: 1.00,  protectedPct: 5.13, wtwPct: 40.00, projectHa: 12.84 }
+      { name: "Forest",    coverPct: 76.42, protectedPct: 1.72, wtwPct: 23.23, projectHa: 1225.65, projectPct: 41.9 },
+      { name: "Grassland", coverPct: 0.13,  protectedPct: 6.76, wtwPct: 33.10, projectHa: 91.21,   projectPct: 3.1 },
+      { name: "Wetland",   coverPct: 4.51,  protectedPct: 1.57, wtwPct: 18.03, projectHa: 28.75,   projectPct: 1.0 },
+      { name: "Lakes",     coverPct: 1.00,  protectedPct: 5.13, wtwPct: 40.00, projectHa: 12.84,   projectPct: 0.4 }
     ],
     linear: [
       { name: "Rivers",    ecoregionKm: 60915.16, protectedPct: 2.29, wtwPct: 23.01, projectKm: 23.20 },
@@ -408,7 +408,6 @@ function renderHabitat(D){
   const linH  = L.length * 72;
   const P0 = D.projectData;
   const totalPkm = L.reduce((s,h)=>s+h.projectKm,0);
-  const totalPha = A.reduce((s,h)=>s+h.projectHa,0);
 
   const left = `
     <div class="panel-left">
@@ -437,7 +436,7 @@ function renderHabitat(D){
       <div class="band-head"><div class="eyebrow">The project</div></div>
       <div>
         <div class="press-title" style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;"><span>Area (ha)</span><span style="font-size:11px;font-style:italic;font-weight:400;color:var(--gray);letter-spacing:0;text-transform:none;">*habitats overlap so total % may exceed 100</span></div>
-        <div style="min-height:${areaH}px;">${A.map(h=>habRow({name:h.name, value:`${nf(Math.round(h.projectHa))} ha`, label:'in project', pct:`${fx(h.projectHa/(totalPha||1)*100)}%`})).join('')}</div>
+        <div style="min-height:${areaH}px;">${A.map(h=>habRow({name:h.name, value:`${nf(Math.round(h.projectHa))} ha`, label:'in project', pct:`${fx(h.projectPct)}%`})).join('')}</div>
         <div class="press-title" style="margin-top:14px;">Length (km)</div>
         <div style="min-height:${linH}px;">${L.map(h=>habRow({name:h.name, value:`${fx(h.projectKm)} km`, label:'in project'})).join('')}</div>
       </div>

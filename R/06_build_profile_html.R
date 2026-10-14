@@ -49,7 +49,7 @@ build_profile_html_pdf <- function(cp_tabs, output_path,
     )
   })
 
-  # Habitat area rows: name, coverPct, protectedPct, wtwPct, projectHa
+  # Habitat area rows: name, coverPct, protectedPct, wtwPct, projectHa, projectPct
   hab_area <- if (!is.null(cp_tabs$habitat_area)) {
     lapply(seq_len(nrow(cp_tabs$habitat_area)), function(i) {
       h <- cp_tabs$habitat_area[i, ]
@@ -58,7 +58,8 @@ build_profile_html_pdf <- function(cp_tabs, output_path,
         coverPct     = round(h[["% cover in ecoregion"]],      2),
         protectedPct = round(h[["% of habitat protected"]],    2),
         wtwPct       = round(h[["% of habitat overlapping WTW"]], 2),
-        projectHa    = round(h[["Project total (ha)"]],         2)
+        projectHa    = round(h[["Project total (ha)"]],         2),
+        projectPct   = round(h[["% of project"]],               1)
       )
     })
   } else list()

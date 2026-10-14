@@ -191,7 +191,8 @@ build_profile_tab <- function(project_data, erap_path, identifier_col, landscape
           dplyr::mutate(Habitat = sub("habitat_", "", Dataset)) |>
         dplyr::select(Habitat, 'Project total (ha)' = Project_value),
       by = "Habitat"
-    )
+    ) |>
+    dplyr::mutate(`% of project` = `Project total (ha)` / header_df$Project_area_ha * 100)
     
   habitat_linear_df <- erap_row[habitat_linear_cols] |>
     tidyr::pivot_longer(everything()) |>
