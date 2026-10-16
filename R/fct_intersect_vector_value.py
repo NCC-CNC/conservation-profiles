@@ -1,11 +1,37 @@
 import arcpy
 #import pandas as pd
 #import tomllib
+import atexit
 import os
+import shutil
 import sys
+import tempfile
 import uuid
 
 arcpy.env.overwriteOutput = True
+
+# Each run gets its own scratch file gdb in a fresh temp folder, instead of
+# arcpy's default %TEMP%/scratch.gdb, which is shared by every arcpy process on
+# the machine (ArcGIS Pro, other pipeline runs). A transient lock on the shared
+# gdb by another process failed a run with "ERROR 160385: Workspace or data
+# source is read only". Setting scratchWorkspace also points tools' own
+# internal temp data here. The folder is removed when the R session's Python
+# exits; a crashed run can leave a cp_scratch_* folder behind in %TEMP%.
+_scratch_dir = tempfile.mkdtemp(prefix="cp_scratch_")
+SCRATCH_GDB = arcpy.management.CreateFileGDB(_scratch_dir, "scratch.gdb")[0]
+arcpy.env.scratchWorkspace = SCRATCH_GDB
+
+# arcpy keeps the gdb open in its workspace cache, so release it before
+# deleting or the folder survives exit
+def _remove_scratch():
+    try:
+        arcpy.management.ClearWorkspaceCache()
+        arcpy.management.Delete(SCRATCH_GDB)
+    except Exception:
+        pass
+    shutil.rmtree(_scratch_dir, ignore_errors=True)
+
+atexit.register(_remove_scratch)
 
 # Sets arcpy's output coordinate system to match a reference dataset, so
 # vector intersect outputs land in the same projection as the rest of the
@@ -26,8 +52,8 @@ def set_output_projection(reference_path):
 # (identical calls returned different areas, dropping up to ~6% of habitat in
 # chained landscape x protected/WTW intersects), with both PairwiseIntersect
 # and classic Intersect, parallel processing on or off. Writing to a file gdb
-# gave identical results on every repeat. Names carry a per-call tag since the
-# scratch gdb, unlike memory/, is shared across concurrently running processes.
+# gave identical results on every repeat. The gdb is per-run (see SCRATCH_GDB
+# above); names also carry a per-call tag so repeat calls never collide.
 def intersect_vector_value(input_fc, boundary):
 
     # set units based on shape type
@@ -41,7 +67,7 @@ def intersect_vector_value(input_fc, boundary):
 
     boundaries = boundary if isinstance(boundary, list) else [boundary]
 
-    scratch = arcpy.env.scratchGDB
+    scratch = SCRATCH_GDB
     tag = uuid.uuid4().hex[:8]
     dissolved = os.path.join(scratch, f"d_{tag}")
 
